@@ -1,1497 +1,261 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sale Order Track System</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0a0e17;
-  --bg2: #111827;
-  --bg3: #1a2236;
-  --card: #141d2e;
-  --border: #1e2d45;
-  --border2: #253550;
-  --accent: #00d4ff;
-  --accent2: #0099bb;
-  --green: #00e676;
-  --yellow: #ffca28;
-  --orange: #ff8a00;
-  --red: #ff4444;
-  --purple: #a855f7;
-  --text: #e2e8f0;
-  --text2: #94a3b8;
-  --text3: #475569;
-  --font: 'Sarabun', sans-serif;
-  --mono: 'IBM Plex Mono', monospace;
-  --radius: 10px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ─── SIDEBAR ─── */
-.layout { display:flex; min-height:100vh; }
-
-.sidebar {
-  width: 240px;
-  min-height: 100vh;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  left: 0; top: 0;
-  z-index: 100;
-  transition: width .3s;
-}
-
-.sidebar-logo {
-  padding: 22px 20px 18px;
-  border-bottom: 1px solid var(--border);
-}
-.logo-title {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 1px;
-}
-.logo-sub {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 3px;
-}
-
-.nav-section { padding: 16px 0; flex:1; }
-.nav-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text3);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 0 20px 8px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 20px;
-  cursor: pointer;
-  color: var(--text2);
-  font-size: 14px;
-  font-weight: 500;
-  border-left: 3px solid transparent;
-  transition: all .2s;
-  position: relative;
-}
-.nav-item:hover { background: var(--bg3); color: var(--text); }
-.nav-item.active {
-  background: rgba(0,212,255,0.08);
-  color: var(--accent);
-  border-left-color: var(--accent);
-}
-.nav-icon { font-size: 17px; width:22px; text-align:center; }
-.nav-badge {
-  margin-left: auto;
-  background: var(--red);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 20px;
-  min-width: 20px;
-  text-align: center;
-}
-
-.sidebar-bottom {
-  padding: 16px 20px;
-  border-top: 1px solid var(--border);
-}
-
-.lang-toggle {
-  display: flex;
-  background: var(--bg3);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 2px;
-}
-.lang-btn {
-  flex: 1;
-  padding: 6px;
-  border-radius: 6px;
-  border: none;
-  background: transparent;
-  color: var(--text2);
-  font-family: var(--font);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
-}
-.lang-btn.active {
-  background: var(--accent);
-  color: var(--bg);
-}
-
-/* ─── MAIN ─── */
-.main {
-  margin-left: 240px;
-  flex: 1;
-  min-height: 100vh;
-}
-
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(10,14,23,0.9);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 28px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.topbar-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-  flex: 1;
-}
-.topbar-search {
-  position: relative;
-}
-.topbar-search input {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 16px 8px 38px;
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 13px;
-  width: 240px;
-  outline: none;
-  transition: border-color .2s;
-}
-.topbar-search input:focus { border-color: var(--accent); }
-.topbar-search .search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text3);
-}
-.sync-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 14px;
-  color: var(--text2);
-  font-family: var(--font);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all .2s;
-}
-.sync-btn:hover { border-color: var(--accent); color: var(--accent); }
-.sync-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity:1; }
-  50% { opacity:.3; }
-}
-
-/* ─── CONTENT ─── */
-.content { padding: 28px; }
-
-/* ─── TABS ─── */
-.tab-nav {
-  display: flex;
-  gap: 4px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 24px;
-  width: fit-content;
-}
-.tab-btn {
-  padding: 8px 18px;
-  border-radius: 7px;
-  border: none;
-  background: transparent;
-  color: var(--text2);
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
-  white-space: nowrap;
-}
-.tab-btn.active { background: var(--accent); color: var(--bg); }
-.tab-btn:hover:not(.active) { color: var(--text); background: var(--bg3); }
-
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-/* ─── DASHBOARD ─── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 14px;
-  margin-bottom: 24px;
-}
-.stat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-  position: relative;
-  overflow: hidden;
-  cursor: default;
-  transition: border-color .2s, transform .2s;
-}
-.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
-.stat-card::before {
-  content:'';
-  position: absolute;
-  top:0; left:0; right:0;
-  height: 3px;
-  background: var(--card-accent, var(--accent));
-}
-.stat-card.c-blue { --card-accent: var(--accent); }
-.stat-card.c-green { --card-accent: var(--green); }
-.stat-card.c-orange { --card-accent: var(--orange); }
-.stat-card.c-red { --card-accent: var(--red); }
-.stat-card.c-yellow { --card-accent: var(--yellow); }
-.stat-card.c-purple { --card-accent: var(--purple); }
-
-.stat-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 10px;
-}
-.stat-value {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1;
-}
-.stat-value.money { font-size: 20px; }
-.stat-sub {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 6px;
-}
-.stat-icon {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 28px;
-  opacity: .12;
-}
-
-/* ─── ALERTS ─── */
-.alert-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.alert-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-}
-.alert-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.alert-title { font-size: 14px; font-weight: 700; }
-.alert-count {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: 12px;
-  background: rgba(255,68,68,0.15);
-  color: var(--red);
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-weight: 600;
-}
-.alert-count.warn { background: rgba(255,138,0,0.15); color: var(--orange); }
-.alert-count.info { background: rgba(0,212,255,0.15); color: var(--accent); }
-
-.alert-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 9px 12px;
-  border-radius: 7px;
-  background: var(--bg3);
-  margin-bottom: 7px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background .2s;
-}
-.alert-item:hover { background: var(--border); }
-.alert-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* ─── TABLE ─── */
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.section-title { font-size: 15px; font-weight: 700; }
-
-.filter-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.filter-select, .filter-input {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-  transition: border-color .2s;
-}
-.filter-select:focus, .filter-input:focus { border-color: var(--accent); }
-.filter-input { width: 180px; }
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
-}
-.btn-primary { background: var(--accent); color: var(--bg); }
-.btn-primary:hover { background: var(--accent2); }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text2); }
-.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-.btn-ghost { background: transparent; color: var(--text2); }
-.btn-ghost:hover { color: var(--text); background: var(--bg3); }
-
-.table-wrap {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.table-scroll { overflow-x: auto; }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-thead th {
-  background: var(--bg3);
-  padding: 12px 14px;
-  text-align: left;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
-  border-bottom: 1px solid var(--border);
-}
-tbody tr {
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background .15s;
-}
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--bg3); }
-td {
-  padding: 12px 14px;
-  color: var(--text);
-  white-space: nowrap;
-}
-td.mono { font-family: var(--mono); font-size: 12px; }
-.td-secondary { color: var(--text2); font-size: 12px; }
-
-.badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.badge-blue { background: rgba(0,212,255,0.15); color: var(--accent); }
-.badge-green { background: rgba(0,230,118,0.15); color: var(--green); }
-.badge-orange { background: rgba(255,138,0,0.15); color: var(--orange); }
-.badge-red { background: rgba(255,68,68,0.15); color: var(--red); }
-.badge-yellow { background: rgba(255,202,40,0.15); color: var(--yellow); }
-.badge-purple { background: rgba(168,85,247,0.15); color: var(--purple); }
-.badge-gray { background: rgba(148,163,184,0.1); color: var(--text2); }
-
-.table-footer {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  background: var(--bg2);
-  gap: 10px;
-}
-.table-info { font-size: 12px; color: var(--text3); flex:1; }
-.page-btn {
-  width: 30px; height: 30px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text2);
-  font-family: var(--mono);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all .2s;
-  display: flex; align-items: center; justify-content: center;
-}
-.page-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-.page-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
-
-/* ─── MODAL ─── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  width: 780px;
-  max-width: 95vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-  animation: slideUp .25s ease;
-}
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity:0; }
-  to { transform: translateY(0); opacity:1; }
-}
-.modal-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 22px 26px;
-  border-bottom: 1px solid var(--border);
-}
-.modal-title { font-size: 16px; font-weight: 700; }
-.modal-po { font-family: var(--mono); font-size: 13px; color: var(--accent); }
-.modal-close {
-  margin-left: auto;
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg3);
-  color: var(--text2);
-  cursor: pointer;
-  font-size: 18px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .2s;
-}
-.modal-close:hover { border-color: var(--red); color: var(--red); }
-.modal-body { padding: 24px 26px; }
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 22px;
-}
-.detail-row {
-  background: var(--bg3);
-  border-radius: 8px;
-  padding: 12px 14px;
-}
-.detail-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 5px;
-}
-.detail-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-.detail-value.mono { font-family: var(--mono); font-size: 13px; }
-
-/* ─── DOCS ─── */
-.docs-section { margin-top: 6px; }
-.docs-title { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 12px; display: flex; align-items:center; gap:8px; }
-.docs-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
-.doc-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .2s;
-}
-.doc-card:hover { border-color: var(--accent); background: var(--bg3); }
-.doc-card.has-doc { border-color: var(--border2); }
-.doc-icon { font-size: 26px; margin-bottom: 7px; }
-.doc-name { font-size: 11px; font-weight: 600; color: var(--text2); }
-.doc-status { font-size: 10px; margin-top: 4px; color: var(--text3); }
-.doc-status.uploaded { color: var(--green); }
-
-/* ─── PROGRESS TRACK ─── */
-.track-wrap { margin-bottom: 22px; }
-.track-label { font-size: 12px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
-.track-steps {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-.track-step {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-.track-step::before {
-  content:'';
-  position: absolute;
-  top: 16px;
-  left: -50%;
-  right: 50%;
-  height: 2px;
-  background: var(--border);
-  z-index: 0;
-}
-.track-step:first-child::before { display:none; }
-.track-step.done::before { background: var(--accent); }
-
-.step-dot {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: var(--bg3);
-  border: 2px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  position: relative;
-  z-index: 1;
-  transition: all .3s;
-}
-.track-step.done .step-dot {
-  background: rgba(0,212,255,0.15);
-  border-color: var(--accent);
-}
-.track-step.current .step-dot {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 16px rgba(0,212,255,0.4);
-}
-.step-label { font-size: 10px; color: var(--text3); margin-top: 7px; font-weight: 600; text-align:center; }
-.track-step.done .step-label, .track-step.current .step-label { color: var(--text2); }
-
-/* ─── CONFIG PANEL ─── */
-.config-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 16px;
-}
-.config-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; align-items:center; gap:8px; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-label { font-size: 12px; font-weight: 600; color: var(--text2); }
-.form-input {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 14px;
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 13px;
-  outline: none;
-  transition: border-color .2s;
-}
-.form-input:focus { border-color: var(--accent); }
-
-/* ─── NOTIFICATION PANEL ─── */
-.notif-list { display: flex; flex-direction:column; gap: 10px; }
-.notif-item {
-  display: flex;
-  gap: 14px;
-  padding: 14px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  align-items: flex-start;
-  cursor: pointer;
-  transition: border-color .2s;
-}
-.notif-item:hover { border-color: var(--border2); }
-.notif-item.unread { border-left: 3px solid var(--accent); }
-.notif-item.warn-border { border-left: 3px solid var(--orange); }
-.notif-item.red-border { border-left: 3px solid var(--red); }
-.notif-icon-wrap {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  display: flex; align-items:center; justify-content:center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-.notif-content { flex:1; }
-.notif-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-.notif-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
-.notif-time { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: var(--mono); }
-
-/* scrollbar */
-::-webkit-scrollbar { width:6px; height:6px; }
-::-webkit-scrollbar-track { background: var(--bg2); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius:3px; }
-
-/* ─── RESPONSIVE ─── */
-@media (max-width:1400px) { .stats-grid { grid-template-columns: repeat(3,1fr); } }
-@media (max-width:900px) {
-  .sidebar { width: 56px; }
-  .sidebar .logo-title, .sidebar .logo-sub, .sidebar .nav-item span, .sidebar .lang-toggle { display:none; }
-  .main { margin-left: 56px; }
-  .stats-grid { grid-template-columns: repeat(2,1fr); }
-  .alert-grid { grid-template-columns: 1fr; }
-}
-
-/* Animations */
-.fade-in { animation: fadeIn .3s ease; }
-@keyframes fadeIn { from {opacity:0; transform:translateY(8px)} to {opacity:1; transform:translateY(0)} }
-
-.skeleton {
-  background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 50%, var(--bg3) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 4px;
-  height: 14px;
-}
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SO Tracking System - Notifications Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
+        .nav-active { border-bottom: 4px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .hidden { display: none; }
+        .alert-card { transition: all 0.2s; }
+        .alert-card:hover { transform: scale(1.01); }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-<div class="layout">
-
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-title">⬡ SOT SYSTEM</div>
-    <div class="logo-sub" id="logo-sub">Sale Order Tracker</div>
-  </div>
-  <nav class="nav-section">
-    <div class="nav-label" id="nav-label-main">หลัก</div>
-    <div class="nav-item active" onclick="navigate('dashboard')">
-      <span class="nav-icon">📊</span><span id="nav-dashboard">แดชบอร์ด</span>
-    </div>
-    <div class="nav-item" onclick="navigate('orders')">
-      <span class="nav-icon">📋</span><span id="nav-orders">จัดการ PO</span>
-    </div>
-    <div class="nav-item" onclick="navigate('notifications')">
-      <span class="nav-icon">🔔</span><span id="nav-notifications">แจ้งเตือน</span>
-      <span class="nav-badge" id="notif-badge">5</span>
-    </div>
-    <div class="nav-label" id="nav-label-system" style="margin-top:12px">ระบบ</div>
-    <div class="nav-item" onclick="navigate('config')">
-      <span class="nav-icon">⚙️</span><span id="nav-config">ตั้งค่า</span>
-    </div>
-  </nav>
-  <div class="sidebar-bottom">
-    <div class="lang-toggle">
-      <button class="lang-btn active" onclick="setLang('th')">🇹🇭 TH</button>
-      <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
-    </div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main class="main">
-  <div class="topbar">
-    <div class="topbar-title" id="page-title">📊 แดชบอร์ดภาพรวม</div>
-    <div class="topbar-search">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="global-search" placeholder="ค้นหา PO, ลูกค้า..." oninput="globalSearch(this.value)">
-    </div>
-    <button class="sync-btn" onclick="syncGSheet()">
-      <span class="sync-dot"></span>
-      <span id="sync-label">ซิงค์ Google Sheet</span>
-    </button>
-  </div>
-
-  <div class="content">
-
-    <!-- ── TAB NAV ── -->
-    <div class="tab-nav" id="tab-nav">
-      <button class="tab-btn active" onclick="switchTab('overview')" id="tab-overview">ภาพรวม</button>
-      <button class="tab-btn" onclick="switchTab('table')" id="tab-table">ตาราง PO</button>
-      <button class="tab-btn" onclick="switchTab('alerts')" id="tab-alerts">แจ้งเตือน</button>
-    </div>
-
-    <!-- ── DASHBOARD PANEL ── -->
-    <div id="panel-dashboard" class="fade-in">
-
-      <!-- STATS -->
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card c-blue">
-          <div class="stat-label" id="sl-total">PO ทั้งหมด</div>
-          <div class="stat-value" id="sv-total">42</div>
-          <div class="stat-sub" id="ss-total">เดือนนี้ +7</div>
-          <div class="stat-icon">📦</div>
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-shipping-fast text-blue-600 text-2xl"></i>
+                    <span class="text-xl font-bold">SO TRACKER</span>
+                </div>
+                <div class="hidden md:flex space-x-6 h-16">
+                    <button onclick="showPage('overview')" id="btn-overview" class="nav-active px-2 h-full flex items-center">ภาพรวม</button>
+                    <button onclick="showPage('all')" id="btn-all" class="px-2 h-full flex items-center text-gray-500 hover:text-blue-600">รายการ PO ทั้งหมด</button>
+                    <button onclick="showPage('notif')" id="btn-notif" class="px-2 h-full flex items-center text-gray-500 hover:text-red-600 relative">
+                        การแจ้งเตือน
+                        <span id="badge-menu" class="ml-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+            <button onclick="fetchData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition flex items-center">
+                <i class="fas fa-sync-alt mr-2" id="loader"></i> อัปเดตข้อมูล
+            </button>
         </div>
-        <div class="stat-card c-orange">
-          <div class="stat-label" id="sl-prod">กำลังผลิต</div>
-          <div class="stat-value" id="sv-prod">12</div>
-          <div class="stat-sub" id="ss-prod">3 รายการรอวัตถุดิบ</div>
-          <div class="stat-icon">🏭</div>
-        </div>
-        <div class="stat-card c-purple">
-          <div class="stat-label" id="sl-ship">กำลังขนส่ง</div>
-          <div class="stat-value" id="sv-ship">8</div>
-          <div class="stat-sub" id="ss-ship">2 เรือล่าช้า</div>
-          <div class="stat-icon">🚢</div>
-        </div>
-        <div class="stat-card c-yellow">
-          <div class="stat-label" id="sl-near">ใกล้ครบกำหนด</div>
-          <div class="stat-value" id="sv-near">5</div>
-          <div class="stat-sub" id="ss-near">ใน 7 วันข้างหน้า</div>
-          <div class="stat-icon">⏰</div>
-        </div>
-        <div class="stat-card c-red">
-          <div class="stat-label" id="sl-late">งานล่าช้า</div>
-          <div class="stat-value" id="sv-late">3</div>
-          <div class="stat-sub" id="ss-late">ต้องดำเนินการด่วน</div>
-          <div class="stat-icon">🚨</div>
-        </div>
-        <div class="stat-card c-green">
-          <div class="stat-label" id="sl-value">มูลค่ารวม (USD)</div>
-          <div class="stat-value money" id="sv-value">$1.24M</div>
-          <div class="stat-sub" id="ss-value">ยอดค้างชำระ $280K</div>
-          <div class="stat-icon">💰</div>
-        </div>
-      </div>
+    </nav>
 
-      <!-- ALERTS QUICK -->
-      <div class="alert-grid">
-        <div class="alert-card">
-          <div class="alert-header">
-            <span>🚨</span>
-            <div class="alert-title" id="al-late">งานล่าช้า / เรือ Delay</div>
-            <span class="alert-count">3</span>
-          </div>
-          <div class="alert-item" onclick="openModal('PO-2024-0089')">
-            <div class="alert-dot" style="background:var(--red)"></div>
-            <div><div style="font-weight:600">PO-2024-0089</div><div class="td-secondary">Thai Steel Co. – เรือล่าช้า 14 วัน</div></div>
-            <span class="badge badge-red" style="margin-left:auto">DELAY</span>
-          </div>
-          <div class="alert-item" onclick="openModal('PO-2024-0091')">
-            <div class="alert-dot" style="background:var(--red)"></div>
-            <div><div style="font-weight:600">PO-2024-0091</div><div class="td-secondary">Bangmod Industrial – เกินกำหนด 5 วัน</div></div>
-            <span class="badge badge-red" style="margin-left:auto">LATE</span>
-          </div>
-          <div class="alert-item" onclick="openModal('PO-2024-0094')">
-            <div class="alert-dot" style="background:var(--orange)"></div>
-            <div><div style="font-weight:600">PO-2024-0094</div><div class="td-secondary">Metro Parts Ltd. – ใกล้กำหนด 3 วัน</div></div>
-            <span class="badge badge-orange" style="margin-left:auto">DUE SOON</span>
-          </div>
+    <div class="max-w-7xl mx-auto p-6">
+
+        <div id="page-overview" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-blue-500">
+                    <p class="text-gray-400 text-xs font-bold uppercase">Total Orders</p>
+                    <h3 class="text-3xl font-black mt-1" id="stat-count">0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-green-500">
+                    <p class="text-gray-400 text-xs font-bold uppercase">Revenue</p>
+                    <h3 class="text-3xl font-black text-green-600 mt-1" id="stat-revenue">฿0</h3>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 border-b font-bold">5 รายการล่าสุด</div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <tbody id="tbody-recent" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <div class="alert-card">
-          <div class="alert-header">
-            <span>💳</span>
-            <div class="alert-title" id="al-pay">ยังไม่ชำระ / PO ค้าง</div>
-            <span class="alert-count warn">4</span>
-          </div>
-          <div class="alert-item" onclick="openModal('PO-2024-0076')">
-            <div class="alert-dot" style="background:var(--orange)"></div>
-            <div><div style="font-weight:600">PO-2024-0076</div><div class="td-secondary">Sunrise Manufacturing – ค้างชำระ $45,000</div></div>
-            <span class="badge badge-orange" style="margin-left:auto">60 วัน</span>
-          </div>
-          <div class="alert-item" onclick="openModal('PO-2024-0081')">
-            <div class="alert-dot" style="background:var(--yellow)"></div>
-            <div><div style="font-weight:600">PO-2024-0081</div><div class="td-secondary">KP Steel Group – ค้างชำระ $28,500</div></div>
-            <span class="badge badge-yellow" style="margin-left:auto">45 วัน</span>
-          </div>
-          <div class="alert-item" onclick="openModal('PO-2024-0083')">
-            <div class="alert-dot" style="background:var(--yellow)"></div>
-            <div><div style="font-weight:600">PO-2024-0083</div><div class="td-secondary">Eastern Pipes Co. – ค้างชำระ $12,000</div></div>
-            <span class="badge badge-yellow" style="margin-left:auto">30 วัน</span>
-          </div>
-          <div class="alert-item" onclick="openModal('PO-2024-0085')">
-            <div class="alert-dot" style="background:var(--text3)"></div>
-            <div><div style="font-weight:600">PO-2024-0085</div><div class="td-secondary">Northern Steel Co. – ค้างชำระ $9,200</div></div>
-            <span class="badge badge-gray" style="margin-left:auto">15 วัน</span>
-          </div>
+        <div id="page-all" class="hidden space-y-4">
+            <h2 class="text-2xl font-bold">รายการ PO ทั้งหมด (18+ รายการ)</h2>
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border">
+                <div class="overflow-x-auto" style="max-height: 70vh;">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-800 text-white sticky top-0">
+                            <tr>
+                                <th class="px-6 py-4">วันที่</th>
+                                <th class="px-6 py-4">เลข PO</th>
+                                <th class="px-6 py-4">ลูกค้า</th>
+                                <th class="px-6 py-4 text-right">ยอดขาย</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-all" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- RECENT TABLE -->
-      <div class="section-header">
-        <div class="section-title" id="recent-title">📋 รายการล่าสุด</div>
-        <button class="btn btn-outline" onclick="navigate('orders')" style="margin-left:auto" id="see-all-btn">ดูทั้งหมด →</button>
-      </div>
-      <div id="recent-table-wrap"></div>
+        <div id="page-notif" class="hidden space-y-6">
+            <h2 class="text-2xl font-bold flex items-center">
+                <i class="fas fa-bell mr-3 text-red-500"></i> ศูนย์แจ้งเตือนความคืบหน้า
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <h3 class="font-bold text-red-600 border-b pb-2">งานที่เลยกำหนดส่ง (Delay)</h3>
+                    <div id="list-delay" class="space-y-3">
+                        <p class="text-gray-400 text-sm italic">ไม่มีรายการที่เลยกำหนด</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-orange-500 border-b pb-2">ใกล้กำหนดส่ง (ภายใน 7 วัน)</h3>
+                    <div id="list-near" class="space-y-3">
+                        <p class="text-gray-400 text-sm italic">ไม่มีรายการใกล้กำหนดส่ง</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-blue-600 border-b pb-2">ค้างชำระเงิน</h3>
+                    <div id="list-unpaid" class="space-y-3">
+                        <p class="text-gray-400 text-sm italic">ไม่มีรายการค้างชำระ</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-gray-600 border-b pb-2">PO ค้างในระบบเกิน 30 วัน</h3>
+                    <div id="list-stale" class="space-y-3">
+                        <p class="text-gray-400 text-sm italic">ไม่มีรายการค้างนาน</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
-    <!-- ── ORDERS PANEL ── -->
-    <div id="panel-orders" style="display:none" class="fade-in">
-      <div class="section-header">
-        <div class="section-title" id="po-manage-title">📋 จัดการ Sales Order / PO</div>
-        <button class="btn btn-primary" onclick="openAddModal()" style="margin-left:auto">
-          ＋ <span id="add-po-btn">เพิ่ม PO ใหม่</span>
-        </button>
-      </div>
+    <script>
+        const SHEET_ID = '1AK4dzFoUmK2qtRSXE0_Z3VxTCyLautz5EZb-P6jx2AI';
+        const DateTime = luxon.DateTime;
+        let masterData = [];
 
-      <div class="filter-bar">
-        <input class="filter-input" type="text" id="f-customer" placeholder="🔍 ลูกค้า..." oninput="filterTable()">
-        <select class="filter-select" id="f-status" onchange="filterTable()">
-          <option value="">-- สถานะ --</option>
-          <option value="production" id="opt-prod">กำลังผลิต</option>
-          <option value="shipping" id="opt-ship">กำลังขนส่ง</option>
-          <option value="delivered" id="opt-del">ส่งแล้ว</option>
-          <option value="pending" id="opt-pend">รอดำเนินการ</option>
-          <option value="delay" id="opt-delay">ล่าช้า</option>
-        </select>
-        <select class="filter-select" id="f-supplier" onchange="filterTable()">
-          <option value="">-- Supplier --</option>
-          <option>China Steel Corp</option>
-          <option>Nippon Steel</option>
-          <option>POSCO Korea</option>
-          <option>Baosteel Group</option>
-          <option>Tata Steel</option>
-        </select>
-        <select class="filter-select" id="f-month" onchange="filterTable()">
-          <option value="">-- เดือน --</option>
-          <option value="1">มกราคม</option><option value="2">กุมภาพันธ์</option>
-          <option value="3">มีนาคม</option><option value="4">เมษายน</option>
-          <option value="5">พฤษภาคม</option><option value="6">มิถุนายน</option>
-          <option value="7">กรกฎาคม</option><option value="8">สิงหาคม</option>
-          <option value="9">กันยายน</option><option value="10">ตุลาคม</option>
-          <option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option>
-        </select>
-        <select class="filter-select" id="f-size" onchange="filterTable()">
-          <option value="">-- ขนาด --</option>
-          <option>2" SCH40</option><option>4" SCH80</option><option>6" SCH40</option>
-          <option>8" SCH80</option><option>10" SCH40</option><option>12" SCH80</option>
-        </select>
-        <button class="btn btn-ghost" onclick="clearFilters()" id="clear-filter-btn">✕ ล้างตัวกรอง</button>
-      </div>
+        function showPage(p) {
+            ['overview', 'all', 'notif'].forEach(id => {
+                document.getElementById('page-' + id).classList.add('hidden');
+                document.getElementById('btn-' + id).classList.remove('nav-active');
+                document.getElementById('btn-' + id).classList.add('text-gray-500');
+            });
+            document.getElementById('page-' + p).classList.remove('hidden');
+            document.getElementById('btn-' + p).classList.add('nav-active');
+            document.getElementById('btn-' + p).classList.remove('text-gray-500');
+        }
 
-      <div class="table-wrap" id="main-table-wrap"></div>
-    </div>
+        async function fetchData() {
+            document.getElementById('loader').classList.add('fa-spin');
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
+            
+            try {
+                const res = await fetch(url);
+                const txt = await res.text();
+                const json = JSON.parse(txt.substring(47).slice(0, -2));
+                
+                masterData = json.table.rows.map(row => {
+                    const c = row.c;
+                    return {
+                        date: c[0] ? (c[0].f || c[0].v) : '-',      
+                        po: c[1] ? c[1].v : '-',                
+                        customer: c[4] ? c[4].v : '-',          
+                        revenue: c[7] ? (parseFloat(c[7].v) || 0) : 0, 
+                        eta: c[10] ? (c[10].f || c[10].v) : '-',   
+                        payment: c[9] ? c[9].v : ''             
+                    };
+                }).filter(r => r.po !== 'Contract No.' && r.po !== null);
 
-    <!-- ── NOTIFICATIONS PANEL ── -->
-    <div id="panel-notifications" style="display:none" class="fade-in">
-      <div class="section-header">
-        <div class="section-title" id="notif-title">🔔 ระบบแจ้งเตือน</div>
-        <button class="btn btn-outline" style="margin-left:auto" id="mark-all-btn">✓ อ่านทั้งหมด</button>
-      </div>
-      <div class="notif-list" id="notif-list"></div>
-    </div>
+                updateUI();
+                renderNotifications();
+            } catch (e) { console.error(e); }
+            finally { document.getElementById('loader').classList.remove('fa-spin'); }
+        }
 
-    <!-- ── CONFIG PANEL ── -->
-    <div id="panel-config" style="display:none" class="fade-in">
-      <div class="section-header">
-        <div class="section-title" id="config-title">⚙️ ตั้งค่าระบบ</div>
-      </div>
-      <div class="config-card">
-        <div class="config-title">🔗 Google Sheets Integration</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label" id="cfg-sheet-id">Sheet ID</label>
-            <input class="form-input" id="gsheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
-          </div>
-          <div class="form-group">
-            <label class="form-label" id="cfg-sheet-name">Sheet Name (Tab)</label>
-            <input class="form-input" id="gsheet-tab" placeholder="Sales_Orders">
-          </div>
-          <div class="form-group">
-            <label class="form-label" id="cfg-api-key">API Key</label>
-            <input class="form-input" type="password" id="gsheet-key" placeholder="AIza...">
-          </div>
-          <div class="form-group">
-            <label class="form-label" id="cfg-refresh">Auto Refresh (นาที)</label>
-            <input class="form-input" id="gsheet-refresh" type="number" value="5" min="1">
-          </div>
-        </div>
-        <div style="margin-top:16px; display:flex; gap:10px;">
-          <button class="btn btn-primary" onclick="saveConfig()">💾 <span id="save-cfg-btn">บันทึกการตั้งค่า</span></button>
-          <button class="btn btn-outline" onclick="testConnection()">🔌 <span id="test-cfg-btn">ทดสอบการเชื่อมต่อ</span></button>
-        </div>
-      </div>
+        function renderNotifications() {
+            const today = DateTime.now();
+            const containers = {
+                delay: document.getElementById('list-delay'),
+                near: document.getElementById('list-near'),
+                unpaid: document.getElementById('list-unpaid'),
+                stale: document.getElementById('list-stale')
+            };
 
-      <div class="config-card">
-        <div class="config-title">🔔 ตั้งค่าการแจ้งเตือน</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label" id="cfg-due-days">แจ้งเตือนก่อนครบกำหนด (วัน)</label>
-            <input class="form-input" id="cfg-days" type="number" value="7" min="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label" id="cfg-overdue-days">PO ค้างเกิน (วัน)</label>
-            <input class="form-input" id="cfg-overdue" type="number" value="30" min="1">
-          </div>
-        </div>
-      </div>
+            // Clear containers
+            Object.values(containers).forEach(c => c.innerHTML = '');
 
-      <div class="config-card">
-        <div class="config-title">📋 Column Mapping (Google Sheet)</div>
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">เลข PO (Column)</label><input class="form-input" value="A" placeholder="A"></div>
-          <div class="form-group"><label class="form-label">ชื่อลูกค้า (Column)</label><input class="form-input" value="B" placeholder="B"></div>
-          <div class="form-group"><label class="form-label">Item/Spec (Column)</label><input class="form-input" value="C" placeholder="C"></div>
-          <div class="form-group"><label class="form-label">จำนวน (Column)</label><input class="form-input" value="D" placeholder="D"></div>
-          <div class="form-group"><label class="form-label">วันที่สั่ง (Column)</label><input class="form-input" value="E" placeholder="E"></div>
-          <div class="form-group"><label class="form-label">ETD (Column)</label><input class="form-input" value="F" placeholder="F"></div>
-          <div class="form-group"><label class="form-label">ETA (Column)</label><input class="form-input" value="G" placeholder="G"></div>
-          <div class="form-group"><label class="form-label">Supplier (Column)</label><input class="form-input" value="H" placeholder="H"></div>
-          <div class="form-group"><label class="form-label">สถานะ (Column)</label><input class="form-input" value="I" placeholder="I"></div>
-          <div class="form-group"><label class="form-label">มูลค่า USD (Column)</label><input class="form-input" value="J" placeholder="J"></div>
-        </div>
-        <div style="margin-top:16px;">
-          <button class="btn btn-primary" onclick="saveMapping()">💾 <span>บันทึก Mapping</span></button>
-        </div>
-      </div>
-    </div>
+            let counts = { delay: 0, near: 0, unpaid: 0, stale: 0 };
 
-  </div><!-- /content -->
-</main>
-</div>
+            masterData.forEach(r => {
+                // 1. Check ETA (Delay / Near Due)
+                if (r.eta !== '-') {
+                    const etaDate = DateTime.fromFormat(r.eta, 'd/M/yyyy');
+                    if (etaDate.isValid) {
+                        const diff = etaDate.diff(today, 'days').days;
+                        if (diff < 0) {
+                            counts.delay++;
+                            containers.delay.innerHTML += alertItem(r, `เลยกำหนดส่งมาแล้ว ${Math.abs(Math.floor(diff))} วัน`, 'bg-red-50 border-red-200 text-red-700');
+                        } else if (diff <= 7) {
+                            counts.near++;
+                            containers.near.innerHTML += alertItem(r, `ถึงกำหนดในอีก ${Math.ceil(diff)} วัน`, 'bg-orange-50 border-orange-200 text-orange-700');
+                        }
+                    }
+                }
 
-<!-- ─── MODAL ─── -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <div>
-        <div class="modal-po" id="modal-po-num">PO-2024-0089</div>
-        <div class="modal-title" id="modal-customer">Thai Steel Co., Ltd.</div>
-      </div>
-      <span class="badge" id="modal-status-badge">กำลังขนส่ง</span>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <!-- PROGRESS TRACK -->
-      <div class="track-wrap">
-        <div class="track-label" id="track-label">สถานะการดำเนินงาน</div>
-        <div class="track-steps" id="track-steps"></div>
-      </div>
+                // 2. Check Payment
+                if (String(r.payment).includes('ยังไม่ชำระ')) {
+                    counts.unpaid++;
+                    containers.unpaid.innerHTML += alertItem(r, `สถานะ: ยังไม่ชำระเงิน`, 'bg-blue-50 border-blue-200 text-blue-700');
+                }
 
-      <!-- DETAIL GRID -->
-      <div class="detail-grid">
-        <div class="detail-row">
-          <div class="detail-label" id="dl-item">Item / Spec</div>
-          <div class="detail-value mono" id="dv-item">—</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label" id="dl-qty">จำนวน (PCS)</div>
-          <div class="detail-value mono" id="dv-qty">—</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label" id="dl-order-date">วันที่สั่ง</div>
-          <div class="detail-value mono" id="dv-order-date">—</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">ETD / ETA</div>
-          <div class="detail-value mono" id="dv-eta">—</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label" id="dl-supplier">Supplier</div>
-          <div class="detail-value" id="dv-supplier">—</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label" id="dl-value">มูลค่า (USD)</div>
-          <div class="detail-value mono" id="dv-value">—</div>
-        </div>
-      </div>
+                // 3. Check Stale (30+ days)
+                const orderDate = DateTime.fromFormat(r.date, 'd/M/yyyy');
+                if (orderDate.isValid) {
+                    const age = today.diff(orderDate, 'days').days;
+                    if (age > 30) {
+                        counts.stale++;
+                        containers.stale.innerHTML += alertItem(r, `ค้างในระบบมาแล้ว ${Math.floor(age)} วัน`, 'bg-gray-50 border-gray-200 text-gray-700');
+                    }
+                }
+            });
 
-      <!-- DOCUMENTS -->
-      <div class="docs-section">
-        <div class="docs-title">📎 <span id="docs-title">เอกสารแนบ</span></div>
-        <div class="docs-grid" id="docs-grid"></div>
-      </div>
-    </div>
-  </div>
-</div>
+            // Set Badges
+            const totalAlerts = counts.delay + counts.near + counts.unpaid + counts.stale;
+            const badge = document.getElementById('badge-menu');
+            if (totalAlerts > 0) {
+                badge.innerText = totalAlerts;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
 
-<script>
-// ─── DATA ───────────────────────────────────────────────────────────────────
-let DEMO_ORDERS = [
-  { po:'PO-2024-0101', customer:'Thai Steel Co., Ltd.', item:'Pipe 4" SCH40 CS', qty:500, orderDate:'2024-10-01', etd:'2024-11-10', eta:'2024-11-25', supplier:'China Steel Corp', status:'shipping', value:48500, payment:'paid', docs:['po','invoice','packing','bl'] },
-  { po:'PO-2024-0099', customer:'Bangmod Industrial', item:'Elbow 6" SCH80', qty:120, orderDate:'2024-10-05', etd:'2024-11-15', eta:'2024-11-30', supplier:'Nippon Steel', status:'production', value:22800, payment:'partial', docs:['po','invoice'] },
-  { po:'PO-2024-0097', customer:'KP Steel Group', item:'Flange 8" 150# RF', qty:80, orderDate:'2024-09-20', etd:'2024-10-30', eta:'2024-11-14', supplier:'POSCO Korea', status:'delivered', value:31200, payment:'unpaid', docs:['po','invoice','packing','bl','image'] },
-  { po:'PO-2024-0095', customer:'Metro Parts Ltd.', item:'Valve Gate 2" SS316', qty:200, orderDate:'2024-10-10', etd:'2024-11-20', eta:'2024-12-05', supplier:'Tata Steel', status:'pending', value:15600, payment:'paid', docs:['po'] },
-  { po:'PO-2024-0094', customer:'Metro Parts Ltd.', item:'Tee 12" SCH40', qty:60, orderDate:'2024-09-15', etd:'2024-11-01', eta:'2024-11-16', supplier:'Baosteel Group', status:'shipping', value:29000, payment:'unpaid', docs:['po','invoice','packing'] },
-  { po:'PO-2024-0091', customer:'Bangmod Industrial', item:'Reducer 6x4" SCH80', qty:150, orderDate:'2024-09-01', etd:'2024-10-15', eta:'2024-10-30', supplier:'China Steel Corp', status:'delay', value:18400, payment:'unpaid', docs:['po','invoice'] },
-  { po:'PO-2024-0089', customer:'Thai Steel Co., Ltd.', item:'Pipe 10" SCH80 CS', qty:300, orderDate:'2024-08-25', etd:'2024-10-01', eta:'2024-10-16', supplier:'Nippon Steel', status:'delay', value:67200, payment:'partial', docs:['po','invoice','packing'] },
-  { po:'PO-2024-0085', customer:'Northern Steel Co.', item:'Cap 3" SCH40', qty:400, orderDate:'2024-09-10', etd:'2024-11-05', eta:'2024-11-20', supplier:'POSCO Korea', status:'production', value:9200, payment:'unpaid', docs:['po'] },
-  { po:'PO-2024-0083', customer:'Eastern Pipes Co.', item:'Coupling 2" NPT', qty:600, orderDate:'2024-09-05', etd:'2024-11-08', eta:'2024-11-22', supplier:'China Steel Corp', status:'production', value:12000, payment:'unpaid', docs:['po','invoice'] },
-  { po:'PO-2024-0081', customer:'KP Steel Group', item:'Pipe 6" SCH40 SS304', qty:220, orderDate:'2024-08-20', etd:'2024-10-20', eta:'2024-11-04', supplier:'Tata Steel', status:'delivered', value:28500, payment:'unpaid', docs:['po','invoice','packing','bl','image'] },
-  { po:'PO-2024-0076', customer:'Sunrise Manufacturing', item:'Flange 10" 300# FF', qty:40, orderDate:'2024-08-01', etd:'2024-09-20', eta:'2024-10-05', supplier:'Baosteel Group', status:'delivered', value:45000, payment:'unpaid', docs:['po','invoice','packing','bl'] },
-];
+            // Fallback for empty groups
+            Object.keys(containers).forEach(k => {
+                if (counts[k] === 0) containers[k].innerHTML = `<p class="text-gray-400 text-sm italic">ไม่มีรายการ</p>`;
+            });
+        }
 
-const NOTIFICATIONS = [
-  { type:'red', icon:'🚨', title:'เรือล่าช้า – PO-2024-0089', body:'เรือ COSCO STAR จาก Shanghai ล่าช้า 14 วัน ETA ใหม่: 30 พ.ย. 2567', time:'2 ชั่วโมงที่แล้ว', po:'PO-2024-0089', unread:true },
-  { type:'red', icon:'⏰', title:'งานเกินกำหนด – PO-2024-0091', body:'Bangmod Industrial – เกินกำหนดส่ง 5 วันแล้ว กรุณาติดตาม', time:'5 ชั่วโมงที่แล้ว', po:'PO-2024-0091', unread:true },
-  { type:'orange', icon:'📅', title:'ใกล้กำหนด – PO-2024-0094', body:'Metro Parts Ltd. – ครบกำหนดใน 3 วัน (16 พ.ย. 2567)', time:'เมื่อวาน', po:'PO-2024-0094', unread:true },
-  { type:'orange', icon:'💳', title:'ยังไม่ชำระ – PO-2024-0076', body:'Sunrise Manufacturing ค้างชำระ $45,000 มา 60 วันแล้ว', time:'เมื่อวาน', po:'PO-2024-0076', unread:true },
-  { type:'orange', icon:'💳', title:'ยังไม่ชำระ – PO-2024-0081', body:'KP Steel Group ค้างชำระ $28,500 มา 45 วันแล้ว', time:'2 วันที่แล้ว', po:'PO-2024-0081', unread:true },
-  { type:'blue', icon:'✅', title:'ส่งสำเร็จ – PO-2024-0097', body:'KP Steel Group – สินค้าถึงปลายทางแล้ว', time:'3 วันที่แล้ว', po:'PO-2024-0097', unread:false },
-  { type:'blue', icon:'📦', title:'เริ่มผลิต – PO-2024-0099', body:'Bangmod Industrial – Nippon Steel ยืนยันเริ่มผลิตแล้ว', time:'4 วันที่แล้ว', po:'PO-2024-0099', unread:false },
-];
+        function alertItem(r, message, style) {
+            return `
+                <div class="alert-card p-4 rounded-xl border ${style} shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-bold text-sm">${r.po}</span>
+                            <h4 class="text-base font-medium">${r.customer}</h4>
+                            <p class="text-xs mt-1 opacity-80">${message}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold block">฿${r.revenue.toLocaleString()}</span>
+                            <span class="text-[10px] opacity-70">ETA: ${r.eta}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
-const STATUS_MAP = {
-  production: { th:'กำลังผลิต', en:'In Production', badge:'badge-orange', step:1 },
-  shipping:   { th:'กำลังขนส่ง', en:'Shipping',      badge:'badge-purple', step:2 },
-  delivered:  { th:'ส่งแล้ว',    en:'Delivered',      badge:'badge-green',  step:3 },
-  pending:    { th:'รอดำเนินการ',en:'Pending',        badge:'badge-gray',   step:0 },
-  delay:      { th:'ล่าช้า',     en:'Delayed',        badge:'badge-red',    step:2 },
-};
+        function updateUI() {
+            document.getElementById('stat-count').innerText = masterData.length;
+            const rev = masterData.reduce((s, r) => s + r.revenue, 0);
+            document.getElementById('stat-revenue').innerText = '฿' + rev.toLocaleString();
+            
+            const recent = [...masterData].reverse().slice(0, 5);
+            document.getElementById('tbody-recent').innerHTML = recent.map(r => `<tr class="hover:bg-gray-50"><td class="p-4 font-bold text-blue-600">${r.po}</td><td class="p-4">${r.customer}</td><td class="p-4 text-right font-bold">฿${r.revenue.toLocaleString()}</td></tr>`).join('');
+            document.getElementById('tbody-all').innerHTML = masterData.map(r => `<tr class="hover:bg-gray-50"><td class="p-4">${r.date}</td><td class="p-4 font-bold">${r.po}</td><td class="p-4 font-medium text-gray-700">${r.customer}</td><td class="p-4 text-right font-bold text-green-600">฿${r.revenue.toLocaleString()}</td></tr>`).join('');
+        }
 
-const DOC_TYPES = [
-  { key:'po',      icon:'📄', th:'PO', en:'PO' },
-  { key:'invoice', icon:'🧾', th:'Invoice', en:'Invoice' },
-  { key:'packing', icon:'📦', th:'Packing List', en:'Packing List' },
-  { key:'bl',      icon:'🚢', th:'BL', en:'BL' },
-  { key:'image',   icon:'🖼️', th:'รูปสินค้า', en:'Product Image' },
-];
-
-const STEPS = [
-  { th:'รอดำเนินการ', en:'Pending', icon:'📋' },
-  { th:'กำลังผลิต',   en:'Producing', icon:'🏭' },
-  { th:'กำลังขนส่ง',  en:'Shipping', icon:'🚢' },
-  { th:'ส่งแล้ว',     en:'Delivered', icon:'✅' },
-];
-
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let lang = 'th';
-let currentPage = 'dashboard';
-let filteredOrders = [...DEMO_ORDERS];
-let currentTab = 'overview';
-
-// ─── LANG ────────────────────────────────────────────────────────────────────
-const T = {
-  th: {
-    'logo-sub':'Sale Order Tracker',
-    'nav-label-main':'หลัก','nav-label-system':'ระบบ',
-    'nav-dashboard':'แดชบอร์ด','nav-orders':'จัดการ PO',
-    'nav-notifications':'แจ้งเตือน','nav-config':'ตั้งค่า',
-    'sync-label':'ซิงค์ Google Sheet',
-    'tab-overview':'ภาพรวม','tab-table':'ตาราง PO','tab-alerts':'แจ้งเตือน',
-    'sl-total':'PO ทั้งหมด','sl-prod':'กำลังผลิต','sl-ship':'กำลังขนส่ง',
-    'sl-near':'ใกล้ครบกำหนด','sl-late':'งานล่าช้า','sl-value':'มูลค่ารวม (USD)',
-    'ss-total':'เดือนนี้ +7','ss-prod':'3 รายการรอวัตถุดิบ','ss-ship':'2 เรือล่าช้า',
-    'ss-near':'ใน 7 วันข้างหน้า','ss-late':'ต้องดำเนินการด่วน','ss-value':'ยอดค้างชำระ $280K',
-    'al-late':'งานล่าช้า / เรือ Delay','al-pay':'ยังไม่ชำระ / PO ค้าง',
-    'recent-title':'📋 รายการล่าสุด','see-all-btn':'ดูทั้งหมด →',
-    'po-manage-title':'📋 จัดการ Sales Order / PO','add-po-btn':'เพิ่ม PO ใหม่',
-    'clear-filter-btn':'✕ ล้างตัวกรอง',
-    'notif-title':'🔔 ระบบแจ้งเตือน','mark-all-btn':'✓ อ่านทั้งหมด',
-    'config-title':'⚙️ ตั้งค่าระบบ',
-    'save-cfg-btn':'บันทึกการตั้งค่า','test-cfg-btn':'ทดสอบการเชื่อมต่อ',
-    'cfg-sheet-id':'Sheet ID','cfg-sheet-name':'Sheet Name (Tab)',
-    'cfg-api-key':'API Key','cfg-refresh':'Auto Refresh (นาที)',
-    'cfg-due-days':'แจ้งเตือนก่อนครบกำหนด (วัน)','cfg-overdue-days':'PO ค้างเกิน (วัน)',
-    'track-label':'สถานะการดำเนินงาน',
-    'dl-item':'Item / Spec','dl-qty':'จำนวน (PCS)','dl-order-date':'วันที่สั่ง',
-    'dl-supplier':'Supplier','dl-value':'มูลค่า (USD)','docs-title':'เอกสารแนบ',
-    'page-dashboard':'📊 แดชบอร์ดภาพรวม','page-orders':'📋 จัดการ PO',
-    'page-notifications':'🔔 ระบบแจ้งเตือน','page-config':'⚙️ ตั้งค่าระบบ',
-    'opt-prod':'กำลังผลิต','opt-ship':'กำลังขนส่ง','opt-del':'ส่งแล้ว',
-    'opt-pend':'รอดำเนินการ','opt-delay':'ล่าช้า',
-  },
-  en: {
-    'logo-sub':'Sale Order Tracker',
-    'nav-label-main':'MAIN','nav-label-system':'SYSTEM',
-    'nav-dashboard':'Dashboard','nav-orders':'Manage PO',
-    'nav-notifications':'Notifications','nav-config':'Settings',
-    'sync-label':'Sync Google Sheet',
-    'tab-overview':'Overview','tab-table':'PO Table','tab-alerts':'Alerts',
-    'sl-total':'Total POs','sl-prod':'In Production','sl-ship':'Shipping',
-    'sl-near':'Due Soon','sl-late':'Delayed','sl-value':'Total Value (USD)',
-    'ss-total':'This month +7','ss-prod':'3 waiting materials','ss-ship':'2 vessels delayed',
-    'ss-near':'Within 7 days','ss-late':'Urgent action needed','ss-value':'Outstanding $280K',
-    'al-late':'Delayed / Vessel Delay','al-pay':'Unpaid / PO Overdue',
-    'recent-title':'📋 Recent Orders','see-all-btn':'View all →',
-    'po-manage-title':'📋 Manage Sales Order / PO','add-po-btn':'Add New PO',
-    'clear-filter-btn':'✕ Clear Filters',
-    'notif-title':'🔔 Notification System','mark-all-btn':'✓ Mark All Read',
-    'config-title':'⚙️ System Settings',
-    'save-cfg-btn':'Save Settings','test-cfg-btn':'Test Connection',
-    'cfg-sheet-id':'Sheet ID','cfg-sheet-name':'Sheet Name (Tab)',
-    'cfg-api-key':'API Key','cfg-refresh':'Auto Refresh (min)',
-    'cfg-due-days':'Alert before due (days)','cfg-overdue-days':'PO overdue (days)',
-    'track-label':'Order Progress',
-    'dl-item':'Item / Spec','dl-qty':'Quantity (PCS)','dl-order-date':'Order Date',
-    'dl-supplier':'Supplier','dl-value':'Value (USD)','docs-title':'Attachments',
-    'page-dashboard':'📊 Dashboard Overview','page-orders':'📋 Manage PO',
-    'page-notifications':'🔔 Notifications','page-config':'⚙️ System Settings',
-    'opt-prod':'In Production','opt-ship':'Shipping','opt-del':'Delivered',
-    'opt-pend':'Pending','opt-delay':'Delayed',
-  }
-};
-
-function setLang(l) {
-  lang = l;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelector('html').lang = l === 'th' ? 'th' : 'en';
-  applyLang();
-  renderAll();
-}
-
-function applyLang() {
-  const t = T[lang];
-  Object.keys(t).forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = t[id];
-  });
-}
-
-// ─── NAVIGATION ──────────────────────────────────────────────────────────────
-function navigate(page) {
-  currentPage = page;
-  ['dashboard','orders','notifications','config'].forEach(p => {
-    document.getElementById('panel-' + p).style.display = p === page ? 'block' : 'none';
-  });
-  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  document.getElementById('page-title').textContent = T[lang]['page-' + page] || page;
-
-  const tabNav = document.getElementById('tab-nav');
-  tabNav.style.display = page === 'dashboard' ? 'flex' : 'none';
-
-  if (page === 'dashboard') renderDashboard();
-  if (page === 'orders') renderMainTable();
-  if (page === 'notifications') renderNotifications();
-}
-
-// ─── TABS ────────────────────────────────────────────────────────────────────
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-}
-
-// ─── RENDER TABLE ────────────────────────────────────────────────────────────
-function buildTable(orders, maxRows) {
-  const rows = maxRows ? orders.slice(0, maxRows) : orders;
-  const cols = lang === 'th'
-    ? ['เลข PO','ลูกค้า','Item / Spec','จำนวน','วันที่สั่ง','ETD','ETA','Supplier','สถานะ','มูลค่า (USD)','เอกสาร']
-    : ['PO No.','Customer','Item / Spec','Qty','Order Date','ETD','ETA','Supplier','Status','Value (USD)','Docs'];
-
-  let html = `<div class="table-scroll"><table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
-  rows.forEach(o => {
-    const st = STATUS_MAP[o.status];
-    const label = st ? (lang === 'th' ? st.th : st.en) : o.status;
-    const badge = st ? st.badge : 'badge-gray';
-    const docIcons = DOC_TYPES.map(d => o.docs.includes(d.key) ? `<span title="${lang==='th'?d.th:d.en}">${d.icon}</span>` : `<span style="opacity:.2">${d.icon}</span>`).join('');
-    html += `<tr onclick="openModal('${o.po}')">
-      <td class="mono">${o.po}</td>
-      <td>${o.customer}</td>
-      <td class="td-secondary">${o.item}</td>
-      <td class="mono">${o.qty.toLocaleString()}</td>
-      <td class="mono td-secondary">${o.orderDate}</td>
-      <td class="mono td-secondary">${o.etd}</td>
-      <td class="mono td-secondary">${o.eta}</td>
-      <td>${o.supplier}</td>
-      <td><span class="badge ${badge}">${label}</span></td>
-      <td class="mono">$${o.value.toLocaleString()}</td>
-      <td style="letter-spacing:3px">${docIcons}</td>
-    </tr>`;
-  });
-  html += `</tbody></table></div>`;
-  if (!maxRows) {
-    html += `<div class="table-footer"><div class="table-info">${lang==='th'?'แสดง':'Showing'} ${rows.length} / ${orders.length} ${lang==='th'?'รายการ':'records'}</div>
-    <button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button></div>`;
-  }
-  return html;
-}
-
-function renderDashboard() {
-  document.getElementById('recent-table-wrap').innerHTML = buildTable(DEMO_ORDERS, 5);
-}
-
-function renderMainTable() {
-  document.getElementById('main-table-wrap').innerHTML = buildTable(filteredOrders);
-}
-
-function renderNotifications() {
-  const list = document.getElementById('notif-list');
-  list.innerHTML = NOTIFICATIONS.map(n => {
-    const cls = n.type === 'red' ? 'red-border' : (n.type === 'orange' ? 'warn-border' : 'unread');
-    const bg = n.type === 'red' ? 'rgba(255,68,68,0.12)' : (n.type === 'orange' ? 'rgba(255,138,0,0.12)' : 'rgba(0,212,255,0.1)');
-    return `<div class="notif-item ${n.unread ? cls : ''}" onclick="openModal('${n.po}')">
-      <div class="notif-icon-wrap" style="background:${bg}">${n.icon}</div>
-      <div class="notif-content">
-        <div class="notif-title">${n.title}</div>
-        <div class="notif-body">${n.body}</div>
-        <div class="notif-time">${n.time}</div>
-      </div>
-      ${n.unread ? '<span class="badge badge-blue" style="flex-shrink:0">NEW</span>' : ''}
-    </div>`;
-  }).join('');
-}
-
-// ─── MODAL ───────────────────────────────────────────────────────────────────
-function openModal(poNum) {
-  const o = DEMO_ORDERS.find(x => x.po === poNum);
-  if (!o) return;
-
-  document.getElementById('modal-po-num').textContent = o.po;
-  document.getElementById('modal-customer').textContent = o.customer;
-
-  const st = STATUS_MAP[o.status];
-  const badge = document.getElementById('modal-status-badge');
-  badge.textContent = st ? (lang === 'th' ? st.th : st.en) : o.status;
-  badge.className = 'badge ' + (st ? st.badge : 'badge-gray');
-
-  document.getElementById('dv-item').textContent = o.item;
-  document.getElementById('dv-qty').textContent = o.qty.toLocaleString() + ' PCS';
-  document.getElementById('dv-order-date').textContent = o.orderDate;
-  document.getElementById('dv-eta').textContent = `${o.etd} / ${o.eta}`;
-  document.getElementById('dv-supplier').textContent = o.supplier;
-  document.getElementById('dv-value').textContent = '$' + o.value.toLocaleString();
-
-  // Track steps
-  const stepIdx = st ? st.step : 0;
-  const stepsHtml = STEPS.map((s, i) => {
-    const done = i < stepIdx;
-    const curr = i === stepIdx;
-    return `<div class="track-step${done?' done':''}${curr?' current':''}">
-      <div class="step-dot">${done ? '✓' : s.icon}</div>
-      <div class="step-label">${lang === 'th' ? s.th : s.en}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('track-steps').innerHTML = stepsHtml;
-
-  // Docs
-  const docsHtml = DOC_TYPES.map(d => {
-    const has = o.docs.includes(d.key);
-    return `<div class="doc-card${has?' has-doc':''}" title="${has?'คลิกเพื่อดาวน์โหลด':'ยังไม่มีเอกสาร'}">
-      <div class="doc-icon">${d.icon}</div>
-      <div class="doc-name">${lang === 'th' ? d.th : d.en}</div>
-      <div class="doc-status${has?' uploaded':''}">${has?(lang==='th'?'✓ มีเอกสาร':'✓ Uploaded'):(lang==='th'?'ยังไม่มี':'Not yet')}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('docs-grid').innerHTML = docsHtml;
-
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-}
-
-// ─── FILTERS ─────────────────────────────────────────────────────────────────
-function filterTable() {
-  const customer = document.getElementById('f-customer').value.toLowerCase();
-  const status   = document.getElementById('f-status').value;
-  const supplier = document.getElementById('f-supplier').value;
-  const month    = document.getElementById('f-month').value;
-  const size     = document.getElementById('f-size').value.toLowerCase();
-
-  filteredOrders = DEMO_ORDERS.filter(o => {
-    if (customer && !o.customer.toLowerCase().includes(customer)) return false;
-    if (status   && o.status !== status) return false;
-    if (supplier && o.supplier !== supplier) return false;
-    if (month    && !o.orderDate.startsWith(`2024-${month.padStart(2,'0')}`)) return false;
-    if (size     && !o.item.toLowerCase().includes(size)) return false;
-    return true;
-  });
-  renderMainTable();
-}
-
-function clearFilters() {
-  ['f-customer','f-status','f-supplier','f-month','f-size'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  filteredOrders = [...DEMO_ORDERS];
-  renderMainTable();
-}
-
-function globalSearch(q) {
-  if (!q) { filteredOrders = [...DEMO_ORDERS]; return; }
-  const lq = q.toLowerCase();
-  filteredOrders = DEMO_ORDERS.filter(o =>
-    o.po.toLowerCase().includes(lq) ||
-    o.customer.toLowerCase().includes(lq) ||
-    o.item.toLowerCase().includes(lq) ||
-    o.supplier.toLowerCase().includes(lq)
-  );
-  if (currentPage === 'orders') renderMainTable();
-}
-
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-function saveConfig() {
-  const sheetId = document.getElementById('gsheet-id').value;
-  const tab = document.getElementById('gsheet-tab').value;
-  const key = document.getElementById('gsheet-key').value;
-  if (!sheetId || !tab || !key) { alert(lang==='th'?'กรุณากรอกข้อมูลให้ครบ':'Please fill all fields'); return; }
-  localStorage.setItem('sot_config', JSON.stringify({ sheetId, tab, key }));
-  showToast(lang==='th'?'💾 บันทึกการตั้งค่าแล้ว':'💾 Settings saved');
-}
-
-function saveMapping() { showToast(lang==='th'?'✅ บันทึก Column Mapping แล้ว':'✅ Column Mapping saved'); }
-
-function testConnection() {
-  showToast(lang==='th'?'🔌 กำลังทดสอบ...':'🔌 Testing...');
-  setTimeout(() => showToast(lang==='th'?'✅ เชื่อมต่อสำเร็จ':'✅ Connection successful'), 1500);
-}
-
-// ─── SYNC ────────────────────────────────────────────────────────────────────
-async function syncGSheet() {
-  // ไอดีของ Google Sheet ที่คุณให้มา
-  const sheetId = '1fKSmGVmip3TRebpJcCgpMdDVZ9mZZdrFto_o60OaoaM';
-  // เปลี่ยนชื่อ Tab เป็นชื่อชีตของคุณ เช่น 'Sheet1', 'Sales_Orders' หรือ 'แผ่นที่ 1'
-  const tabName = 'Sheet1'; 
-
-  showToast(lang==='th'?'🔄 กำลังดึงข้อมูลจาก Google Sheet...':'🔄 Fetching data...');
-
-  // ใช้ Google Visualization API ดึงข้อมูลเป็น JSON
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${tabName}`;
-
-  try {
-    const res = await fetch(url);
-    const text = await res.text();
-    
-    // ตัด string ส่วนเกินออกเพื่อให้ parse JSON ได้
-    const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/)[1];
-    const data = JSON.parse(jsonString);
-
-    const rows = data.table.rows;
-    
-    // ข้ามแถวแรก (Header) ด้วยการ slice(1) หากบรรทัดแรกของคุณคือหัวตาราง
-    const sheetOrders = rows.slice(1).map(row => {
-      const c = row.c;
-      if(!c || !c[0]) return null; // ข้ามบรรทัดว่าง
-      
-      return {
-        // อ้างอิงตาม Column A-J ใน Sheet (c[0] คือ A, c[1] คือ B, ...)
-        po: c[0] ? c[0].v : '-',
-        customer: c[1] ? c[1].v : '-',
-        item: c[2] ? c[2].v : '-',
-        qty: c[3] ? Number(c[3].v) : 0,
-        orderDate: c[4] ? (c[4].f || c[4].v) : '-', 
-        etd: c[5] ? (c[5].f || c[5].v) : '-',
-        eta: c[6] ? (c[6].f || c[6].v) : '-',
-        supplier: c[7] ? c[7].v : '-',
-        status: c[8] ? String(c[8].v).toLowerCase() : 'pending', // ตัวอย่าง: 'production', 'shipping', 'delivered'
-        value: c[9] ? Number(c[9].v) : 0,
-        payment: 'unpaid',
-        docs: ['po']
-      };
-    }).filter(o => o !== null);
-
-    // อัปเดตข้อมูลเข้าระบบ
-    DEMO_ORDERS = sheetOrders;
-    filteredOrders = [...DEMO_ORDERS]; 
-    
-    // สั่งวาด UI ใหม่ให้แสดงข้อมูลล่าสุด
-    renderAll();
-    
-    showToast(lang==='th'?'✅ ซิงค์ข้อมูลสำเร็จ':'✅ Sync successful');
-    document.querySelector('.sync-dot').style.background = '#00e676';
-
-  } catch (error) {
-    console.error("Error fetching sheet:", error);
-    showToast(lang==='th'?'❌ เกิดข้อผิดพลาดในการดึงข้อมูล (ตรวจสอบสิทธิ์การเข้าถึง Sheet)':'❌ Error fetching data');
-    document.querySelector('.sync-dot').style.background = '#ff4444'; 
-  }
-}
-
-function openAddModal() { showToast(lang==='th'?'🚧 ฟีเจอร์เพิ่ม PO ใหม่ – เชื่อมต่อกับ Google Sheet':'🚧 Add PO feature – connects to Google Sheet'); }
-
-// ─── TOAST ───────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.style.cssText = `position:fixed;bottom:28px;right:28px;background:#1e2d45;border:1px solid #253550;color:#e2e8f0;padding:12px 20px;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;z-index:9999;animation:slideUp .25s ease;box-shadow:0 8px 32px rgba(0,0,0,0.5)`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2800);
-}
-
-// ─── RENDER ALL ──────────────────────────────────────────────────────────────
-function renderAll() {
-  applyLang();
-  renderDashboard();
-  if (currentPage === 'orders') renderMainTable();
-  if (currentPage === 'notifications') renderNotifications();
-}
-
-// ─── INIT ────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  renderAll();
-  // Load saved config
-  const cfg = JSON.parse(localStorage.getItem('sot_config') || '{}');
-  if (cfg.sheetId) document.getElementById('gsheet-id').value = cfg.sheetId;
-  if (cfg.tab) document.getElementById('gsheet-tab').value = cfg.tab;
-  // Auto refresh simulation
-  setInterval(() => {
-    document.querySelector('.sync-dot').style.background = '#ffca28';
-    setTimeout(() => document.querySelector('.sync-dot').style.background = '#00e676', 800);
-  }, 60000);
-  syncGSheet();
-});
-</script>
+        window.onload = fetchData;
+    </script>
 </body>
 </html>
