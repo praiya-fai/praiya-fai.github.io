@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,27 +10,48 @@
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
-        .nav-active { border-bottom: 4px solid #2563eb; color: #2563eb; font-weight: 600; }
-        .hidden { display: none; }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .nav-active {
+            border-bottom: 4px solid #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
+
 <body class="text-gray-800">
 
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-8">
+                <!-- ใส่รูปโลโก้ที่นี่ -->
+                <img src="https://drive.google.com/thumbnail?id=1C6MkV8-hEBUN8ILpg82UtvpClz9VbKqg&sz=w500"
+                    alt="THAIDA Logo" class="h-10 w-auto rounded">
                 <span class="text-xl font-bold text-blue-600">SO TRACKER</span>
                 <div class="hidden md:flex space-x-6 h-16">
-                    <button onclick="showPage('overview')" id="btn-overview" class="nav-active px-2 h-full">ภาพรวม</button>
-                    <button onclick="showPage('all')" id="btn-all" class="px-2 h-full text-gray-500">รายการทั้งหมด</button>
-                    <button onclick="showPage('notif')" id="btn-notif" class="px-2 h-full text-gray-500 relative">
+                    <button onclick="showPage('overview')" id="btn-overview"
+                        class="nav-active px-2 h-full">ภาพรวม</button>
+                    <button onclick="showPage('all')" id="btn-all"
+                        class="px-2 h-full text-gray-500">รายการทั้งหมด</button>
+                    <button onclick="showPage('notif')" id="btn-notif"
+                        class="px-2 h-full text-gray-500 flex items-center justify-center">
                         แจ้งเตือน
-                        <span id="badge-menu" class="ml-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                        <span id="badge-menu"
+                            class="ml-1.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] px-1.5 flex items-center justify-center hidden shadow-sm">0</span>
                     </button>
                 </div>
             </div>
-            <button onclick="fetchData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
+            <button onclick="fetchData()"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
                 <i class="fas fa-sync-alt mr-2" id="loader"></i> รีเฟรชข้อมูล
             </button>
         </div>
@@ -62,7 +84,7 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-recent" class="divide-y divide-gray-100">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -71,7 +93,8 @@
         <div id="page-all" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-bold">รายการทั้งหมด</h2>
-                <input type="text" id="search" oninput="doSearch()" placeholder="ค้นหาเลข Quotation หรือลูกค้า..." class="border px-4 py-2 rounded-xl text-sm w-64 outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="search" oninput="doSearch()" placeholder="ค้นหาเลข Quotation หรือลูกค้า..."
+                    class="border px-4 py-2 rounded-xl text-sm w-64 outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden border">
                 <div class="overflow-x-auto" style="max-height: 70vh;">
@@ -130,21 +153,21 @@
         async function fetchData() {
             document.getElementById('loader').classList.add('fa-spin');
             const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
-            
+
             try {
                 const res = await fetch(url);
                 const txt = await res.text();
                 const json = JSON.parse(txt.substring(47).slice(0, -2));
-                
+
                 mainData = json.table.rows.map(row => {
                     const c = row.c;
                     return {
-                        date: c[0] ? (c[0].f || c[0].v) : '-',      
+                        date: c[0] ? (c[0].f || c[0].v) : '-',
                         po: c[2] ? c[2].v : '-', // ดึงจากคอลัมน์ C (Quotation No)
                         customer: c[4] ? c[4].v : '-', // ดึงจากคอลัมน์ E (ชื่อบริษัท)
                         revenue: c[7] ? (parseFloat(c[7].v) || 0) : 0, // ดึงจากคอลัมน์ H (ยอดเงิน)
-                        eta: c[10] ? (c[10].f || c[10].v) : '-',   
-                        payment: c[9] ? c[9].v : ''             
+                        eta: c[10] ? (c[10].f || c[10].v) : '-',
+                        payment: c[9] ? c[9].v : ''
                     };
                 }).filter(r => r.po !== '-' && r.po !== 'Quotation No.');
 
@@ -158,7 +181,7 @@
             document.getElementById('stat-count').innerText = mainData.length;
             const rev = mainData.reduce((s, r) => s + r.revenue, 0);
             document.getElementById('stat-revenue').innerText = '฿' + rev.toLocaleString();
-            
+
             const recent = [...mainData].reverse().slice(0, 5);
             document.getElementById('tbody-recent').innerHTML = recent.map(r => `
                 <tr class="hover:bg-gray-50 border-b border-gray-50">
@@ -196,7 +219,7 @@
                     }
                 }
                 if (String(r.payment).includes('ยังไม่ชำระ')) { lists.unpaid += alertDiv(r, 'ค้างชำระ', 'bg-blue-50 text-blue-700'); count++; }
-                
+
                 const d = DateTime.fromFormat(r.date, 'd/M/yyyy');
                 if (d.isValid && today.diff(d, 'days').days > 30) { lists.stale += alertDiv(r, 'ค้างเกิน 30 วัน', 'bg-gray-50 text-gray-700'); count++; }
             });
@@ -205,7 +228,7 @@
             document.getElementById('list-near').innerHTML = lists.near || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
             document.getElementById('list-unpaid').innerHTML = lists.unpaid || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
             document.getElementById('list-stale').innerHTML = lists.stale || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
-            
+
             const badge = document.getElementById('badge-menu');
             badge.innerText = count;
             badge.classList.toggle('hidden', count === 0);
@@ -224,4 +247,5 @@
         window.onload = fetchData;
     </script>
 </body>
+
 </html>
