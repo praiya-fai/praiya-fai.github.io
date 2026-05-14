@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SO Tracking System - Notifications Page</title>
+    <title>SO Tracking (Update Header) - Khun Te</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
@@ -12,8 +12,6 @@
         body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
         .nav-active { border-bottom: 4px solid #2563eb; color: #2563eb; font-weight: 600; }
         .hidden { display: none; }
-        .alert-card { transition: all 0.2s; }
-        .alert-card:hover { transform: scale(1.01); }
     </style>
 </head>
 <body class="text-gray-800">
@@ -21,58 +19,67 @@
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 flex justify-between h-16 items-center">
             <div class="flex items-center space-x-8">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-shipping-fast text-blue-600 text-2xl"></i>
-                    <span class="text-xl font-bold">SO TRACKER</span>
-                </div>
+                <span class="text-xl font-bold text-blue-600">SO TRACKER</span>
                 <div class="hidden md:flex space-x-6 h-16">
-                    <button onclick="showPage('overview')" id="btn-overview" class="nav-active px-2 h-full flex items-center">ภาพรวม</button>
-                    <button onclick="showPage('all')" id="btn-all" class="px-2 h-full flex items-center text-gray-500 hover:text-blue-600">รายการ PO ทั้งหมด</button>
-                    <button onclick="showPage('notif')" id="btn-notif" class="px-2 h-full flex items-center text-gray-500 hover:text-red-600 relative">
-                        การแจ้งเตือน
+                    <button onclick="showPage('overview')" id="btn-overview" class="nav-active px-2 h-full">ภาพรวม</button>
+                    <button onclick="showPage('all')" id="btn-all" class="px-2 h-full text-gray-500">รายการทั้งหมด</button>
+                    <button onclick="showPage('notif')" id="btn-notif" class="px-2 h-full text-gray-500 relative">
+                        แจ้งเตือน
                         <span id="badge-menu" class="ml-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
                     </button>
                 </div>
             </div>
-            <button onclick="fetchData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition flex items-center">
-                <i class="fas fa-sync-alt mr-2" id="loader"></i> อัปเดตข้อมูล
+            <button onclick="fetchData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
+                <i class="fas fa-sync-alt mr-2" id="loader"></i> รีเฟรชข้อมูล
             </button>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto p-6">
-
         <div id="page-overview" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-blue-500">
                     <p class="text-gray-400 text-xs font-bold uppercase">Total Orders</p>
                     <h3 class="text-3xl font-black mt-1" id="stat-count">0</h3>
                 </div>
                 <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-green-500">
-                    <p class="text-gray-400 text-xs font-bold uppercase">Revenue</p>
+                    <p class="text-gray-400 text-xs font-bold uppercase">Total Revenue</p>
                     <h3 class="text-3xl font-black text-green-600 mt-1" id="stat-revenue">฿0</h3>
                 </div>
             </div>
-            
-            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b font-bold">5 รายการล่าสุด</div>
+
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border">
+                <div class="px-6 py-4 bg-gray-50 border-b font-bold italic text-blue-600">
+                    5 รายการล่าสุด (อิงตามเลข Quotation)
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <tbody id="tbody-recent" class="divide-y divide-gray-100"></tbody>
+                        <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+                            <tr>
+                                <th class="px-6 py-3 font-semibold">Quotation No</th>
+                                <th class="px-6 py-3 font-semibold">ชื่อบริษัท</th>
+                                <th class="px-6 py-3 font-semibold text-right">จำนวนเงิน</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-recent" class="divide-y divide-gray-100">
+                            </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <div id="page-all" class="hidden space-y-4">
-            <h2 class="text-2xl font-bold">รายการ PO ทั้งหมด (18+ รายการ)</h2>
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">รายการทั้งหมด</h2>
+                <input type="text" id="search" oninput="doSearch()" placeholder="ค้นหาเลข Quotation หรือลูกค้า..." class="border px-4 py-2 rounded-xl text-sm w-64 outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden border">
                 <div class="overflow-x-auto" style="max-height: 70vh;">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-800 text-white sticky top-0">
                             <tr>
                                 <th class="px-6 py-4">วันที่</th>
-                                <th class="px-6 py-4">เลข PO</th>
+                                <th class="px-6 py-4">Quotation No.</th>
                                 <th class="px-6 py-4">ลูกค้า</th>
                                 <th class="px-6 py-4 text-right">ยอดขาย</th>
                             </tr>
@@ -84,57 +91,40 @@
         </div>
 
         <div id="page-notif" class="hidden space-y-6">
-            <h2 class="text-2xl font-bold flex items-center">
-                <i class="fas fa-bell mr-3 text-red-500"></i> ศูนย์แจ้งเตือนความคืบหน้า
-            </h2>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <h3 class="font-bold text-red-600 border-b pb-2">งานที่เลยกำหนดส่ง (Delay)</h3>
-                    <div id="list-delay" class="space-y-3">
-                        <p class="text-gray-400 text-sm italic">ไม่มีรายการที่เลยกำหนด</p>
-                    </div>
+            <h2 class="text-xl font-bold text-red-600"><i class="fas fa-bell mr-2"></i>รายการแจ้งเตือน</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <h3 class="font-bold border-b pb-2">เรือ Delay / เลยกำหนดส่ง</h3>
+                    <div id="list-delay" class="space-y-2"></div>
                 </div>
-
-                <div class="space-y-4">
-                    <h3 class="font-bold text-orange-500 border-b pb-2">ใกล้กำหนดส่ง (ภายใน 7 วัน)</h3>
-                    <div id="list-near" class="space-y-3">
-                        <p class="text-gray-400 text-sm italic">ไม่มีรายการใกล้กำหนดส่ง</p>
-                    </div>
+                <div class="space-y-3">
+                    <h3 class="font-bold border-b pb-2 text-orange-600">ใกล้กำหนดส่ง (7 วัน)</h3>
+                    <div id="list-near" class="space-y-2"></div>
                 </div>
-
-                <div class="space-y-4">
-                    <h3 class="font-bold text-blue-600 border-b pb-2">ค้างชำระเงิน</h3>
-                    <div id="list-unpaid" class="space-y-3">
-                        <p class="text-gray-400 text-sm italic">ไม่มีรายการค้างชำระ</p>
-                    </div>
+                <div class="space-y-3">
+                    <h3 class="font-bold border-b pb-2 text-blue-600">ค้างชำระเงิน</h3>
+                    <div id="list-unpaid" class="space-y-2"></div>
                 </div>
-
-                <div class="space-y-4">
-                    <h3 class="font-bold text-gray-600 border-b pb-2">PO ค้างในระบบเกิน 30 วัน</h3>
-                    <div id="list-stale" class="space-y-3">
-                        <p class="text-gray-400 text-sm italic">ไม่มีรายการค้างนาน</p>
-                    </div>
+                <div class="space-y-3">
+                    <h3 class="font-bold border-b pb-2 text-gray-500">ค้างในระบบเกิน 30 วัน</h3>
+                    <div id="list-stale" class="space-y-2"></div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
         const SHEET_ID = '1AK4dzFoUmK2qtRSXE0_Z3VxTCyLautz5EZb-P6jx2AI';
         const DateTime = luxon.DateTime;
-        let masterData = [];
+        let mainData = [];
 
         function showPage(p) {
             ['overview', 'all', 'notif'].forEach(id => {
                 document.getElementById('page-' + id).classList.add('hidden');
                 document.getElementById('btn-' + id).classList.remove('nav-active');
-                document.getElementById('btn-' + id).classList.add('text-gray-500');
             });
             document.getElementById('page-' + p).classList.remove('hidden');
             document.getElementById('btn-' + p).classList.add('nav-active');
-            document.getElementById('btn-' + p).classList.remove('text-gray-500');
         }
 
         async function fetchData() {
@@ -146,113 +136,89 @@
                 const txt = await res.text();
                 const json = JSON.parse(txt.substring(47).slice(0, -2));
                 
-                masterData = json.table.rows.map(row => {
+                mainData = json.table.rows.map(row => {
                     const c = row.c;
                     return {
                         date: c[0] ? (c[0].f || c[0].v) : '-',      
-                        po: c[1] ? c[1].v : '-',                
-                        customer: c[4] ? c[4].v : '-',          
-                        revenue: c[7] ? (parseFloat(c[7].v) || 0) : 0, 
+                        po: c[2] ? c[2].v : '-', // ดึงจากคอลัมน์ C (Quotation No)
+                        customer: c[4] ? c[4].v : '-', // ดึงจากคอลัมน์ E (ชื่อบริษัท)
+                        revenue: c[7] ? (parseFloat(c[7].v) || 0) : 0, // ดึงจากคอลัมน์ H (ยอดเงิน)
                         eta: c[10] ? (c[10].f || c[10].v) : '-',   
                         payment: c[9] ? c[9].v : ''             
                     };
-                }).filter(r => r.po !== 'Contract No.' && r.po !== null);
+                }).filter(r => r.po !== '-' && r.po !== 'Quotation No.');
 
-                updateUI();
+                renderUI();
                 renderNotifications();
             } catch (e) { console.error(e); }
             finally { document.getElementById('loader').classList.remove('fa-spin'); }
         }
 
+        function renderUI() {
+            document.getElementById('stat-count').innerText = mainData.length;
+            const rev = mainData.reduce((s, r) => s + r.revenue, 0);
+            document.getElementById('stat-revenue').innerText = '฿' + rev.toLocaleString();
+            
+            const recent = [...mainData].reverse().slice(0, 5);
+            document.getElementById('tbody-recent').innerHTML = recent.map(r => `
+                <tr class="hover:bg-gray-50 border-b border-gray-50">
+                    <td class="px-6 py-4 font-bold text-blue-600">${r.po}</td>
+                    <td class="px-6 py-4">${r.customer}</td>
+                    <td class="px-6 py-4 text-right font-bold">฿${r.revenue.toLocaleString()}</td>
+                </tr>
+            `).join('');
+            renderTable(mainData);
+        }
+
+        function renderTable(data) {
+            document.getElementById('tbody-all').innerHTML = data.map(r => `
+                <tr class="hover:bg-blue-50">
+                    <td class="px-6 py-4">${r.date}</td>
+                    <td class="px-6 py-4 font-bold text-blue-700">${r.po}</td>
+                    <td class="px-6 py-4">${r.customer}</td>
+                    <td class="px-6 py-4 text-right font-bold text-green-600">฿${r.revenue.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
         function renderNotifications() {
             const today = DateTime.now();
-            const containers = {
-                delay: document.getElementById('list-delay'),
-                near: document.getElementById('list-near'),
-                unpaid: document.getElementById('list-unpaid'),
-                stale: document.getElementById('list-stale')
-            };
+            const lists = { delay: '', near: '', unpaid: '', stale: '' };
+            let count = 0;
 
-            // Clear containers
-            Object.values(containers).forEach(c => c.innerHTML = '');
-
-            let counts = { delay: 0, near: 0, unpaid: 0, stale: 0 };
-
-            masterData.forEach(r => {
-                // 1. Check ETA (Delay / Near Due)
+            mainData.forEach(r => {
                 if (r.eta !== '-') {
                     const etaDate = DateTime.fromFormat(r.eta, 'd/M/yyyy');
                     if (etaDate.isValid) {
                         const diff = etaDate.diff(today, 'days').days;
-                        if (diff < 0) {
-                            counts.delay++;
-                            containers.delay.innerHTML += alertItem(r, `เลยกำหนดส่งมาแล้ว ${Math.abs(Math.floor(diff))} วัน`, 'bg-red-50 border-red-200 text-red-700');
-                        } else if (diff <= 7) {
-                            counts.near++;
-                            containers.near.innerHTML += alertItem(r, `ถึงกำหนดในอีก ${Math.ceil(diff)} วัน`, 'bg-orange-50 border-orange-200 text-orange-700');
-                        }
+                        if (diff < 0) { lists.delay += alertDiv(r, 'เลยกำหนดส่ง', 'bg-red-50 text-red-700'); count++; }
+                        else if (diff <= 7) { lists.near += alertDiv(r, `ในอีก ${Math.ceil(diff)} วัน`, 'bg-orange-50 text-orange-700'); count++; }
                     }
                 }
-
-                // 2. Check Payment
-                if (String(r.payment).includes('ยังไม่ชำระ')) {
-                    counts.unpaid++;
-                    containers.unpaid.innerHTML += alertItem(r, `สถานะ: ยังไม่ชำระเงิน`, 'bg-blue-50 border-blue-200 text-blue-700');
-                }
-
-                // 3. Check Stale (30+ days)
-                const orderDate = DateTime.fromFormat(r.date, 'd/M/yyyy');
-                if (orderDate.isValid) {
-                    const age = today.diff(orderDate, 'days').days;
-                    if (age > 30) {
-                        counts.stale++;
-                        containers.stale.innerHTML += alertItem(r, `ค้างในระบบมาแล้ว ${Math.floor(age)} วัน`, 'bg-gray-50 border-gray-200 text-gray-700');
-                    }
-                }
+                if (String(r.payment).includes('ยังไม่ชำระ')) { lists.unpaid += alertDiv(r, 'ค้างชำระ', 'bg-blue-50 text-blue-700'); count++; }
+                
+                const d = DateTime.fromFormat(r.date, 'd/M/yyyy');
+                if (d.isValid && today.diff(d, 'days').days > 30) { lists.stale += alertDiv(r, 'ค้างเกิน 30 วัน', 'bg-gray-50 text-gray-700'); count++; }
             });
 
-            // Set Badges
-            const totalAlerts = counts.delay + counts.near + counts.unpaid + counts.stale;
-            const badge = document.getElementById('badge-menu');
-            if (totalAlerts > 0) {
-                badge.innerText = totalAlerts;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-
-            // Fallback for empty groups
-            Object.keys(containers).forEach(k => {
-                if (counts[k] === 0) containers[k].innerHTML = `<p class="text-gray-400 text-sm italic">ไม่มีรายการ</p>`;
-            });
-        }
-
-        function alertItem(r, message, style) {
-            return `
-                <div class="alert-card p-4 rounded-xl border ${style} shadow-sm">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="font-bold text-sm">${r.po}</span>
-                            <h4 class="text-base font-medium">${r.customer}</h4>
-                            <p class="text-xs mt-1 opacity-80">${message}</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-bold block">฿${r.revenue.toLocaleString()}</span>
-                            <span class="text-[10px] opacity-70">ETA: ${r.eta}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function updateUI() {
-            document.getElementById('stat-count').innerText = masterData.length;
-            const rev = masterData.reduce((s, r) => s + r.revenue, 0);
-            document.getElementById('stat-revenue').innerText = '฿' + rev.toLocaleString();
+            document.getElementById('list-delay').innerHTML = lists.delay || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
+            document.getElementById('list-near').innerHTML = lists.near || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
+            document.getElementById('list-unpaid').innerHTML = lists.unpaid || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
+            document.getElementById('list-stale').innerHTML = lists.stale || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
             
-            const recent = [...masterData].reverse().slice(0, 5);
-            document.getElementById('tbody-recent').innerHTML = recent.map(r => `<tr class="hover:bg-gray-50"><td class="p-4 font-bold text-blue-600">${r.po}</td><td class="p-4">${r.customer}</td><td class="p-4 text-right font-bold">฿${r.revenue.toLocaleString()}</td></tr>`).join('');
-            document.getElementById('tbody-all').innerHTML = masterData.map(r => `<tr class="hover:bg-gray-50"><td class="p-4">${r.date}</td><td class="p-4 font-bold">${r.po}</td><td class="p-4 font-medium text-gray-700">${r.customer}</td><td class="p-4 text-right font-bold text-green-600">฿${r.revenue.toLocaleString()}</td></tr>`).join('');
+            const badge = document.getElementById('badge-menu');
+            badge.innerText = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
+
+        function alertDiv(r, msg, style) {
+            return `<div class="p-3 rounded-lg border ${style} text-xs mb-2 shadow-sm"><b>${r.po}</b>: ${r.customer} <br> <span class="opacity-70 font-semibold">${msg}</span></div>`;
+        }
+
+        function doSearch() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = mainData.filter(r => r.customer.toLowerCase().includes(q) || r.po.toLowerCase().includes(q));
+            renderTable(filtered);
         }
 
         window.onload = fetchData;
