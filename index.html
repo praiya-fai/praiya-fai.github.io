@@ -1,251 +1,344 @@
 <!DOCTYPE html>
-<html lang="th">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SO Tracking (Update Header) - Khun Te</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wealth Dashboard - Nai Than Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-sans: 'Prompt', sans-serif;
+      --color-primary: #60a5fa;
+      --color-success: #34d399;
+      --color-danger: #f87171;
+      --color-bg: #0b0f1a;
+      --color-panel: rgba(30, 41, 59, 0.7);
+      --color-border: rgba(255, 255, 255, 0.1);
+      --color-text-main: #f1f5f9;
+      --color-text-sub: #94a3b8;
+    }
 
-        body {
-            font-family: 'Kanit', sans-serif;
-            background-color: #f8fafc;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: var(--font-sans); 
+      background-color: var(--color-bg); 
+      background-image: radial-gradient(circle at top right, #1e293b, #0b0f1a);
+      color: var(--color-text-main); 
+      padding: 2rem 1.5rem; 
+      min-height: 100vh;
+    }
 
-        .nav-active {
-            border-bottom: 4px solid #2563eb;
-            color: #2563eb;
-            font-weight: 600;
-        }
+    .dash-container { 
+      max-width: 1440px; 
+      margin: 0 auto; 
+      background: var(--color-panel); 
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 32px; 
+      padding: 2.5rem; 
+      border: 1px solid var(--color-border); 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
 
-        .hidden {
-            display: none;
-        }
-    </style>
+    /* --- Header --- */
+    .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; gap: 20px; }
+    .top-title { font-weight: 600; font-size: 1.8rem; letter-spacing: -0.02em; }
+    
+    .lang-switcher { display: flex; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 14px; border: 1px solid var(--color-border); }
+    .lang-btn { padding: 8px 18px; border: none; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; border-radius: 10px; color: var(--color-text-sub); transition: 0.3s; }
+    .lang-btn.active { background: var(--color-primary); color: #000; }
+
+    .btn-refresh { 
+      background: var(--color-primary); color: #0b0f1a; border: none; 
+      padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: 600; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-refresh:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(96, 165, 250, 0.4); }
+
+    /* --- Summary --- */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 3rem; }
+    .summary-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 20px; padding: 20px; }
+    .summary-card h4 { font-size: 12px; color: var(--color-text-sub); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .summary-card .val { font-size: 24px; font-weight: 600; color: #fff; }
+
+    /* --- Charts --- */
+    .chart-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; margin-bottom: 2.5rem; }
+    .chart-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--color-border); border-radius: 24px; padding: 24px; min-height: 450px; }
+
+    /* --- Tables --- */
+    .section-label { font-size: 13px; font-weight: 600; color: var(--color-text-sub); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ""; height: 1px; flex: 1; background: var(--color-border); }
+
+    .table-wrap { 
+      max-height: 400px; overflow: auto; background: rgba(0, 0, 0, 0.2); 
+      border-radius: 20px; border: 1px solid var(--color-border); margin-bottom: 2.5rem;
+    }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; white-space: nowrap; }
+    thead th { position: sticky; top: 0; z-index: 30; background: #161b2a; color: var(--color-text-sub); font-weight: 500; text-align: right; padding: 16px 20px; }
+    thead th:first-child { text-align: left; }
+    tbody td { padding: 14px 20px; text-align: right; border-bottom: 1px solid var(--color-border); color: var(--color-text-sub); }
+    tbody td:first-child { text-align: left; color: #fff; }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    /* --- Logos & Badges --- */
+    .stock-info-cell { display: flex; align-items: center; }
+    .stock-logo { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-right: 12px; border: 1px solid var(--color-border); }
+    .stock-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+    .ticker-badge { background: rgba(96, 165, 250, 0.1); color: var(--color-primary); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+
+    .up { color: var(--color-success) !important; }
+    .down { color: var(--color-danger) !important; }
+    #loading-overlay { position: fixed; inset: 0; background: var(--color-bg); display: flex; justify-content: center; align-items: center; z-index: 1000; color: var(--color-primary); font-weight: 600; letter-spacing: 0.1em; }
+
+    @media (max-width: 1024px) { .chart-row { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { 
+      .mobile-card-table, .mobile-card-table thead, .mobile-card-table tbody, .mobile-card-table th, .mobile-card-table td, .mobile-card-table tr { display: block; }
+      .mobile-card-table thead tr { position: absolute; top: -9999px; left: -9999px; }
+      .mobile-card-table tr { margin-bottom: 16px; border: 1px solid var(--color-border); border-radius: 16px; overflow: hidden; background: rgba(0,0,0,0.3); }
+      .mobile-card-table td { 
+        position: relative; 
+        padding: 12px 16px 12px 45% !important; 
+        text-align: right !important; 
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 48px;
+        white-space: normal;
+      }
+      .mobile-card-table td:last-child { border-bottom: none; }
+      .mobile-card-table td::before { 
+        content: attr(data-label); 
+        position: absolute; 
+        left: 16px; 
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40%; 
+        text-align: left; 
+        font-weight: 500; 
+        color: var(--color-text-sub); 
+        white-space: normal;
+        line-height: 1.2;
+      }
+      .mobile-card-table { white-space: normal; }
+      .mobile-card-wrap { overflow: visible !important; background: transparent !important; border: none !important; max-height: none !important; }
+      .dash-container { padding: 1.5rem 1rem; }
+    }
+  </style>
 </head>
+<body>
 
-<body class="text-gray-800">
+<div id="loading-overlay">🌑 NAI THAN PORTFOLIO...</div>
 
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between h-16 items-center">
-            <div class="flex items-center space-x-8">
-                <!-- ใส่รูปโลโก้ที่นี่ -->
-                <img src="https://drive.google.com/thumbnail?id=1C6MkV8-hEBUN8ILpg82UtvpClz9VbKqg&sz=w500"
-                    alt="THAIDA Logo" class="h-10 w-auto rounded">
-                <span class="text-xl font-bold text-blue-600">SO TRACKER</span>
-                <div class="hidden md:flex space-x-6 h-16">
-                    <button onclick="showPage('overview')" id="btn-overview"
-                        class="nav-active px-2 h-full">ภาพรวม</button>
-                    <button onclick="showPage('all')" id="btn-all"
-                        class="px-2 h-full text-gray-500">รายการทั้งหมด</button>
-                    <button onclick="showPage('notif')" id="btn-notif"
-                        class="px-2 h-full text-gray-500 flex items-center justify-center">
-                        แจ้งเตือน
-                        <span id="badge-menu"
-                            class="ml-1.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] px-1.5 flex items-center justify-center hidden shadow-sm">0</span>
-                    </button>
-                </div>
-            </div>
-            <button onclick="fetchData()"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
-                <i class="fas fa-sync-alt mr-2" id="loader"></i> รีเฟรชข้อมูล
-            </button>
-        </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto p-6">
-        <div id="page-overview" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-blue-500">
-                    <p class="text-gray-400 text-xs font-bold uppercase">Total Orders</p>
-                    <h3 class="text-3xl font-black mt-1" id="stat-count">0</h3>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-green-500">
-                    <p class="text-gray-400 text-xs font-bold uppercase">Total Revenue</p>
-                    <h3 class="text-3xl font-black text-green-600 mt-1" id="stat-revenue">฿0</h3>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border">
-                <div class="px-6 py-4 bg-gray-50 border-b font-bold italic text-blue-600">
-                    5 รายการล่าสุด (อิงตามเลข Quotation)
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
-                            <tr>
-                                <th class="px-6 py-3 font-semibold">Quotation No</th>
-                                <th class="px-6 py-3 font-semibold">ชื่อบริษัท</th>
-                                <th class="px-6 py-3 font-semibold text-right">จำนวนเงิน</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-recent" class="divide-y divide-gray-100">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-all" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">รายการทั้งหมด</h2>
-                <input type="text" id="search" oninput="doSearch()" placeholder="ค้นหาเลข Quotation หรือลูกค้า..."
-                    class="border px-4 py-2 rounded-xl text-sm w-64 outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border">
-                <div class="overflow-x-auto" style="max-height: 70vh;">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-800 text-white sticky top-0">
-                            <tr>
-                                <th class="px-6 py-4">วันที่</th>
-                                <th class="px-6 py-4">Quotation No.</th>
-                                <th class="px-6 py-4">ลูกค้า</th>
-                                <th class="px-6 py-4 text-right">ยอดขาย</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-all" class="divide-y divide-gray-100"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-notif" class="hidden space-y-6">
-            <h2 class="text-xl font-bold text-red-600"><i class="fas fa-bell mr-2"></i>รายการแจ้งเตือน</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-3">
-                    <h3 class="font-bold border-b pb-2">เรือ Delay / เลยกำหนดส่ง</h3>
-                    <div id="list-delay" class="space-y-2"></div>
-                </div>
-                <div class="space-y-3">
-                    <h3 class="font-bold border-b pb-2 text-orange-600">ใกล้กำหนดส่ง (7 วัน)</h3>
-                    <div id="list-near" class="space-y-2"></div>
-                </div>
-                <div class="space-y-3">
-                    <h3 class="font-bold border-b pb-2 text-blue-600">ค้างชำระเงิน</h3>
-                    <div id="list-unpaid" class="space-y-2"></div>
-                </div>
-                <div class="space-y-3">
-                    <h3 class="font-bold border-b pb-2 text-gray-500">ค้างในระบบเกิน 30 วัน</h3>
-                    <div id="list-stale" class="space-y-2"></div>
-                </div>
-            </div>
-        </div>
+<div class="dash-container">
+  <div class="top-bar">
+    <div>
+      <h2 class="top-title" data-i18n="top_title">My Stock Portfolio</h2>
+      <div id="current-date" style="font-size:13px; color:var(--color-text-sub); margin-top: 4px;"></div>
     </div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <div class="lang-switcher">
+        <button class="lang-btn" id="lang-en" onclick="changeLanguage('en')">EN</button>
+        <button class="lang-btn" id="lang-th" onclick="changeLanguage('th')">TH</button>
+      </div>
+      <button id="refresh-btn" class="btn-refresh" onclick="fetchLivePrices()" data-i18n="btn_refresh">Update Prices</button>
+    </div>
+  </div>
 
-    <script>
-        const SHEET_ID = '1AK4dzFoUmK2qtRSXE0_Z3VxTCyLautz5EZb-P6jx2AI';
-        const DateTime = luxon.DateTime;
-        let mainData = [];
+  <div class="section-label" data-i18n="overview_label">Portfolio Summary</div>
+  <div id="summary-panel" class="summary-grid"></div>
 
-        function showPage(p) {
-            ['overview', 'all', 'notif'].forEach(id => {
-                document.getElementById('page-' + id).classList.add('hidden');
-                document.getElementById('btn-' + id).classList.remove('nav-active');
-            });
-            document.getElementById('page-' + p).classList.remove('hidden');
-            document.getElementById('btn-' + p).classList.add('nav-active');
-        }
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="section-label" data-i18n="growth_chart_title">Portfolio Growth (THB)</div>
+      <div style="height:350px;"><canvas id="growthChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-label" data-i18n="ticker_chart_title">Stock Allocation (%)</div>
+      <div style="height:350px;"><canvas id="tickerPieChart"></canvas></div>
+    </div>
+  </div>
 
-        async function fetchData() {
-            document.getElementById('loader').classList.add('fa-spin');
-            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
+  <div class="section-label" data-i18n="holdings_label">Portfolio Holdings (Current)</div>
+  <div class="table-wrap mobile-card-wrap">
+    <table class="mobile-card-table">
+      <thead>
+        <tr>
+          <th data-i18n="th_stock">Stock</th>
+          <th data-i18n="th_shares">Shares</th>
+          <th data-i18n="th_cost_usd">Avg Cost</th>
+          <th data-i18n="th_last_usd">Price</th>
+          <th data-i18n="th_val_thb">Value (THB)</th>
+          <th data-i18n="th_val_usd">Value (USD)</th>
+          <th data-i18n="th_pnl">Total P&L</th>
+        </tr>
+      </thead>
+      <tbody id="holdings-body"></tbody>
+    </table>
+  </div>
 
-            try {
-                const res = await fetch(url);
-                const txt = await res.text();
-                const json = JSON.parse(txt.substring(47).slice(0, -2));
+  <!-- นำ Trade History กลับมาตามคำขอของ Nai Than -->
+  <div class="section-label" data-i18n="trades_label">Trade History (Logs)</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-i18n="th_stock">Stock</th>
+          <th data-i18n="th_date">Date</th>
+          <th data-i18n="th_shares">Shares</th>
+          <th data-i18n="th_cost_thb">Cost (THB)</th>
+          <th data-i18n="th_cost_usd">Price</th>
+          <th data-i18n="th_last_usd">Last</th>
+          <th data-i18n="th_val_thb">Value (THB)</th>
+          <th data-i18n="th_pnl">P&L</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
 
-                mainData = json.table.rows.map(row => {
-                    const c = row.c;
-                    return {
-                        date: c[0] ? (c[0].f || c[0].v) : '-',
-                        po: c[2] ? c[2].v : '-', // ดึงจากคอลัมน์ C (Quotation No)
-                        customer: c[4] ? c[4].v : '-', // ดึงจากคอลัมน์ E (ชื่อบริษัท)
-                        revenue: c[7] ? (parseFloat(c[7].v) || 0) : 0, // ดึงจากคอลัมน์ H (ยอดเงิน)
-                        eta: c[10] ? (c[10].f || c[10].v) : '-',
-                        payment: c[9] ? c[9].v : ''
-                    };
-                }).filter(r => r.po !== '-' && r.po !== 'Quotation No.');
+  <div id="update-time-note" style="font-size:12px; color:var(--color-text-sub); text-align:center; margin-top:20px; opacity: 0.6;"></div>
+</div>
 
-                renderUI();
-                renderNotifications();
-            } catch (e) { console.error(e); }
-            finally { document.getElementById('loader').classList.remove('fa-spin'); }
-        }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+  const i18n = {
+    en: { top_title: "My Stock Portfolio", btn_refresh: "Update Prices", overview_label: "Summary", holdings_label: "Holdings", trades_label: "Transaction History", th_stock: "Asset", th_date: "Date", th_shares: "Shares", th_cost_thb: "Cost (THB)", th_cost_usd: "Price/Cost", th_last_usd: "Market Price", th_val_thb: "Value (THB)", th_val_usd: "Value (USD)", th_pnl: "P&L", metric_cost: "Cumulative Cost", metric_val: "Market Value", metric_pnl: "Total Return", metric_ex: "FX Rate" },
+    th: { top_title: "พอร์ตหุ้นของฉัน", btn_refresh: "ดึงราคาล่าสุด", overview_label: "สรุปภาพรวม", holdings_label: "หุ้นในพอร์ต", trades_label: "ประวัติรายการทั้งหมด", th_stock: "สินทรัพย์", th_date: "วันที่", th_shares: "จำนวน", th_cost_thb: "ต้นทุน (THB)", th_cost_usd: "ราคา/ต้นทุน", th_last_usd: "ราคาตลาด", th_val_thb: "มูลค่า (THB)", th_val_usd: "มูลค่า (USD)", th_pnl: "กำไร/ขาดทุน", metric_cost: "ต้นทุนสะสม", metric_val: "มูลค่าตลาด", metric_pnl: "กำไรสุทธิ", metric_ex: "อัตราแลกเปลี่ยน" }
+  };
 
-        function renderUI() {
-            document.getElementById('stat-count').innerText = mainData.length;
-            const rev = mainData.reduce((s, r) => s + r.revenue, 0);
-            document.getElementById('stat-revenue').innerText = '฿' + rev.toLocaleString();
+  let currentLang = localStorage.getItem('dash_lang') || 'en';
+  let trades = [], livePrices = {}, liveExRate = 35.0, charts = {};
+  const FINNHUB_KEY = 'd81cmgpr01qler4hqqfgd81cmgpr01qler4hqqg0';
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/1zv1K04AhC0-oOw-vYBhrtq9KV7pqS2P2SnGWTg8S5Ls/export?format=csv';
 
-            const recent = [...mainData].reverse().slice(0, 5);
-            document.getElementById('tbody-recent').innerHTML = recent.map(r => `
-                <tr class="hover:bg-gray-50 border-b border-gray-50">
-                    <td class="px-6 py-4 font-bold text-blue-600">${r.po}</td>
-                    <td class="px-6 py-4">${r.customer}</td>
-                    <td class="px-6 py-4 text-right font-bold">฿${r.revenue.toLocaleString()}</td>
-                </tr>
-            `).join('');
-            renderTable(mainData);
-        }
+  const getLogoUrl = (t) => {
+    const d = { 'AAPL': 'apple.com', 'VOO': 'vanguard.com', 'TSLA': 'tesla.com', 'MU': 'micron.com', 'ASTS': 'ast-science.com', 'TTWO': 'take2games.com' };
+    return d[t] ? `https://logo.clearbit.com/${d[t]}` : `https://financialmodelingprep.com/image-stock/${t}.png`;
+  };
 
-        function renderTable(data) {
-            document.getElementById('tbody-all').innerHTML = data.map(r => `
-                <tr class="hover:bg-blue-50">
-                    <td class="px-6 py-4">${r.date}</td>
-                    <td class="px-6 py-4 font-bold text-blue-700">${r.po}</td>
-                    <td class="px-6 py-4">${r.customer}</td>
-                    <td class="px-6 py-4 text-right font-bold text-green-600">฿${r.revenue.toLocaleString()}</td>
-                </tr>
-            `).join('');
-        }
+  async function fetchExRate() {
+    try { const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD'); const d = await r.json(); if (d.rates.THB) liveExRate = d.rates.THB; } catch(e) {}
+  }
 
-        function renderNotifications() {
-            const today = DateTime.now();
-            const lists = { delay: '', near: '', unpaid: '', stale: '' };
-            let count = 0;
+  function fetchTrades() {
+    Papa.parse(CSV_URL, {
+      download: true, header: false, skipEmptyLines: true,
+      complete: async function(results) {
+        document.getElementById('loading-overlay').style.display = 'none';
+        trades = results.data.slice(1).map(r => ({
+          ticker: r[0]?.trim(), date: r[2]?.trim(), amountTHB: parseFloat(r[4] || 0), priceUSD: parseFloat(r[5] || 0), shares: parseFloat(r[6] || 0), amountUSD: parseFloat(r[8] || 0)
+        })).filter(t => t.ticker);
+        await fetchExRate();
+        applyLanguage(currentLang);
+        fetchLivePrices();
+        setInterval(fetchLivePrices, 300000);
+      }
+    });
+  }
 
-            mainData.forEach(r => {
-                if (r.eta !== '-') {
-                    const etaDate = DateTime.fromFormat(r.eta, 'd/M/yyyy');
-                    if (etaDate.isValid) {
-                        const diff = etaDate.diff(today, 'days').days;
-                        if (diff < 0) { lists.delay += alertDiv(r, 'เลยกำหนดส่ง', 'bg-red-50 text-red-700'); count++; }
-                        else if (diff <= 7) { lists.near += alertDiv(r, `ในอีก ${Math.ceil(diff)} วัน`, 'bg-orange-50 text-orange-700'); count++; }
-                    }
-                }
-                if (String(r.payment).includes('ยังไม่ชำระ')) { lists.unpaid += alertDiv(r, 'ค้างชำระ', 'bg-blue-50 text-blue-700'); count++; }
+  async function fetchLivePrices() {
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
+    const tickers = [...new Set(trades.map(t => t.ticker))];
+    const fetchPromises = tickers.map(s => fetch(`https://finnhub.io/api/v1/quote?symbol=${s}&token=${FINNHUB_KEY}`).then(res => res.json()).then(data => { if (data.c) livePrices[s] = data.c; }));
+    await Promise.all(fetchPromises);
+    renderAll();
+    btn.disabled = false;
+    document.getElementById('update-time-note').innerText = `Last updated: ${new Date().toLocaleTimeString()} (Auto 5m)`;
+  }
 
-                const d = DateTime.fromFormat(r.date, 'd/M/yyyy');
-                if (d.isValid && today.diff(d, 'days').days > 30) { lists.stale += alertDiv(r, 'ค้างเกิน 30 วัน', 'bg-gray-50 text-gray-700'); count++; }
-            });
+  function formatNum(n, d = 2) { return n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }); }
 
-            document.getElementById('list-delay').innerHTML = lists.delay || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
-            document.getElementById('list-near').innerHTML = lists.near || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
-            document.getElementById('list-unpaid').innerHTML = lists.unpaid || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
-            document.getElementById('list-stale').innerHTML = lists.stale || '<p class="text-xs text-gray-400 p-2">ไม่มีรายการ</p>';
+  function renderMetrics() {
+    const costTHB = trades.reduce((s, t) => s + t.amountTHB, 0);
+    let valUSD = 0, costUSD = 0;
+    trades.forEach(t => { costUSD += t.amountUSD; valUSD += (livePrices[t.ticker] || t.priceUSD) * t.shares; });
+    const valTHB = valUSD * liveExRate;
+    const pnlUSD = valUSD - costUSD;
+    const pnlPct = costUSD > 0 ? (pnlUSD / costUSD) * 100 : 0;
+    const lang = i18n[currentLang];
+    document.getElementById('summary-panel').innerHTML = `
+      <div class="summary-card"><h4>${lang.metric_cost}</h4><div class="val">฿${formatNum(costTHB, 0)}</div><div style="font-size:14px; color:var(--color-text-sub)">$${formatNum(costUSD)}</div></div>
+      <div class="summary-card"><h4>${lang.metric_val}</h4><div class="val" style="color:var(--color-success)">฿${formatNum(valTHB, 0)}</div><div style="font-size:14px; color:var(--color-text-sub)">$${formatNum(valUSD)}</div></div>
+      <div class="summary-card"><h4>${lang.metric_pnl}</h4><div class="val ${pnlUSD>=0?'up':'down'}">${pnlUSD>=0?'+':''}$${formatNum(Math.abs(pnlUSD))}</div><div class="${pnlPct>=0?'up':'down'}" style="font-size:14px;">${pnlPct>=0?'+':''}${formatNum(pnlPct)}%</div></div>
+      <div class="summary-card"><h4>${lang.metric_ex}</h4><div class="val" style="color:var(--color-primary)">${formatNum(liveExRate)}</div><div style="font-size:14px; color:var(--color-text-sub)">USD/THB</div></div>`;
+  }
 
-            const badge = document.getElementById('badge-menu');
-            badge.innerText = count;
-            badge.classList.toggle('hidden', count === 0);
-        }
+  function renderHoldings() {
+    const grouped = {};
+    trades.forEach(t => {
+      if (!grouped[t.ticker]) grouped[t.ticker] = { shares: 0, costUSD: 0 };
+      grouped[t.ticker].shares += t.shares; grouped[t.ticker].costUSD += t.amountUSD;
+    });
+    const lang = i18n[currentLang];
+    const holdingsHTML = Object.keys(grouped).filter(t => Math.abs(grouped[t].shares) > 0.000001).map(t => {
+      const d = grouped[t]; const lp = livePrices[t] || (d.costUSD/d.shares); const vUSD = lp * d.shares;
+      const pnl = vUSD - d.costUSD; const pnlP = (pnl / d.costUSD) * 100;
+      return `<tr>
+        <td data-label="${lang.th_stock}"><div class="stock-info-cell"><div class="stock-logo"><img src="${getLogoUrl(t)}" onerror="this.src='https://ui-avatars.com/api/?name=${t}'"></div><span class="ticker-badge">${t}</span></div></td>
+        <td data-label="${lang.th_shares}">${d.shares.toFixed(4)}</td><td data-label="${lang.th_cost_usd}">$${formatNum(d.costUSD/d.shares)}</td><td data-label="${lang.th_last_usd}">$${formatNum(lp)}</td><td data-label="${lang.th_val_thb}" style="color:#fff; font-weight:600">฿${formatNum(vUSD*liveExRate, 0)}</td><td data-label="${lang.th_val_usd}">$${formatNum(vUSD)}</td>
+        <td data-label="${lang.th_pnl}" class="${pnl>=0?'up':'down'}"><div style="text-align:right"><b>${pnl>=0?'+':''}$${formatNum(Math.abs(pnl))}</b><br><small>${pnlP.toFixed(2)}%</small></div></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('holdings-body').innerHTML = holdingsHTML;
+  }
 
-        function alertDiv(r, msg, style) {
-            return `<div class="p-3 rounded-lg border ${style} text-xs mb-2 shadow-sm"><b>${r.po}</b>: ${r.customer} <br> <span class="opacity-70 font-semibold">${msg}</span></div>`;
-        }
+  function renderTable() {
+    const lang = i18n[currentLang];
+    document.getElementById('table-body').innerHTML = trades.map(t => {
+      const lp = livePrices[t.ticker] || t.priceUSD; const pnl = (lp * t.shares) - t.amountUSD;
+      return `<tr>
+        <td data-label="${lang.th_stock}"><span class="ticker-badge">${t.ticker}</span></td>
+        <td data-label="${lang.th_date}">${t.date}</td>
+        <td data-label="${lang.th_shares}">${t.shares.toFixed(4)}</td>
+        <td data-label="${lang.th_cost_thb}">฿${formatNum(t.amountTHB, 0)}</td>
+        <td data-label="${lang.th_cost_usd}">$${formatNum(t.priceUSD)}</td>
+        <td data-label="${lang.th_last_usd}">$${formatNum(lp)}</td>
+        <td data-label="${lang.th_val_thb}">฿${formatNum(lp * t.shares * liveExRate, 0)}</td>
+        <td data-label="${lang.th_pnl}" class="${pnl>=0?'up':'down'}">$${formatNum(pnl)}</td>
+      </tr>`;
+    }).join('');
+  }
 
-        function doSearch() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const filtered = mainData.filter(r => r.customer.toLowerCase().includes(q) || r.po.toLowerCase().includes(q));
-            renderTable(filtered);
-        }
+  function renderCharts() {
+    Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = 'rgba(255,255,255,0.05)'; Chart.defaults.font.family = 'Prompt';
+    const ctxG = document.getElementById('growthChart').getContext('2d');
+    if (charts.growth) charts.growth.destroy();
+    const sorted = [...trades].sort((a,b) => new Date(a.date) - new Date(b.date));
+    const labels = [], costData = [], valueData = [];
+    let dCost = 0, dVal = 0;
+    const lang = i18n[currentLang];
+    sorted.forEach((t, i) => {
+      dCost += t.amountTHB; dVal += (livePrices[t.ticker] || t.priceUSD) * t.shares * liveExRate;
+      labels.push(t.date); costData.push(dCost); valueData.push(dVal);
+    });
+    charts.growth = new Chart(ctxG, { type: 'line', data: { labels, datasets: [
+      { label: lang.metric_val, data: valueData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: (ctx) => ctx.dataIndex === labels.length - 1 ? 6 : 0, pointBackgroundColor: '#10b981' },
+      { label: lang.metric_cost, data: costData, borderColor: '#64748b', borderDash: [5, 5], fill: false, stepped: 'before', borderWidth: 2, pointRadius: (ctx) => ctx.dataIndex % 5 === 0 || ctx.dataIndex === labels.length - 1 ? 4 : 0, pointBackgroundColor: '#475569' }
+    ]}, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { afterBody: (ctxs) => { const v = ctxs.find(c => c.datasetIndex===0)?.raw; const c = ctxs.find(c => c.datasetIndex===1)?.raw; if(v!==undefined && c!==undefined) { const pnl = v - c; return `\n${lang.metric_pnl}: ${pnl>=0?'+':''}${pnl<0?'-':''}฿${formatNum(Math.abs(pnl),0)}`; } return ''; } } } }, scales: { y: { ticks: { callback: (v) => '฿' + v.toLocaleString() } } } } });
 
-        window.onload = fetchData;
-    </script>
+    const ctxP = document.getElementById('tickerPieChart').getContext('2d');
+    if (charts.pie) charts.pie.destroy();
+    const byTicker = {}; trades.forEach(t => { 
+        const val = (livePrices[t.ticker] || t.priceUSD) * t.shares * liveExRate;
+        if(val > 0) byTicker[t.ticker] = (byTicker[t.ticker]||0) + val;
+    });
+    const totalV = Object.values(byTicker).reduce((a, b) => a + b, 0);
+    const sortedTickers = Object.keys(byTicker).sort((a,b) => byTicker[b] - byTicker[a]);
+    charts.pie = new Chart(ctxP, { type: 'doughnut', data: { labels: sortedTickers.map(k => `${k} (${((byTicker[k]/totalV)*100).toFixed(1)}%)`), datasets: [{ data: sortedTickers.map(k => byTicker[k]), backgroundColor: ['#60a5fa','#34d399','#fbbf24','#f87171','#a78bfa','#06b6d4'], borderWidth: 0 }]}, options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { position: 'bottom', labels: { padding: 15 } } } } });
+  }
+
+  function changeLanguage(lang) { currentLang = lang; localStorage.setItem('dash_lang', lang); applyLanguage(lang); renderAll(); }
+  function applyLanguage(lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active')); document.getElementById(`lang-${lang}`).classList.add('active');
+    document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = i18n[lang][el.dataset.i18n]);
+    document.getElementById('current-date').innerText = new Date().toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-US', { year:'numeric', month:'long', day:'numeric' });
+  }
+
+  function renderAll() { renderMetrics(); renderHoldings(); renderTable(); renderCharts(); }
+  fetchTrades();
+</script>
 </body>
-
 </html>
